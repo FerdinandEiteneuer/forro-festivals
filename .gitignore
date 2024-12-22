@@ -1,5 +1,5 @@
 private.json
-
+*.json
 
 # Byte-compiled files
 __pycache__/
