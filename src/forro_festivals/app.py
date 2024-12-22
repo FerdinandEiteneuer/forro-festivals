@@ -1,13 +1,17 @@
-from flask import Flask, render_template
 import json
+import subprocess
+import os
+
+from flask import Flask, render_template, request
+
+from forro_festivals.scripts.create_impressum import create_impressum
+from forro_festivals.config import AUTH_TOKEN, root_path_repository
+
+def prepare():
+    create_impressum()
 
 
 app = Flask(__name__)
-
-
-def load_private_data():
-    with open('private.json', 'r') as f:
-        return json.load(f)
 
 
 festivals_data = {
@@ -67,5 +71,44 @@ def impressum():
     return app.send_static_file('impressum.html')
 
 
+@app.route('/git-webhook', methods=['POST'])
+def git_webhook():
+    auth_token = request.args.get('auth_token')
+
+    if auth_token != AUTH_TOKEN:
+        return "Unauthorized", 403
+
+    if request.method == 'POST':
+        try:
+            os.chdir(root_path_repository)
+
+            # Perform a git pull
+            subprocess.run(['git', 'pull'], check=True)
+
+            return "Git pull successful", 200
+        except Exception as e:
+            return f"Error: {str(e)}", 500
+
+
+        # Next, we tell pythonanywhere to reload the app
+
+        url = f"https://www.pythonanywhere.com/api/v0/user/{USERNAME}/webapps/www.forro-festivals.com/reload/"
+
+        command = [
+            "curl",
+            "-X", "POST",
+            "-H", f"Authorization: Token {AUTH_TOKEN}",
+            url
+        ]
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            print("Output:", result.stdout)
+        except subprocess.CalledProcessError as e:
+            print("Error:", e.stderr)
+
+    return "Invalid request", 400
+
+
 if __name__ == '__main__':
+    prepare()
     app.run(debug=True)
