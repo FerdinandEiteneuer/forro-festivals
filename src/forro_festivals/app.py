@@ -5,7 +5,7 @@ import os
 from flask import Flask, render_template, request
 
 from forro_festivals.scripts.create_impressum import create_impressum
-from forro_festivals.config import AUTH_TOKEN, root_path_repository
+from forro_festivals.config import AUTH_TOKEN, USERNAME, root_path_repository
 
 def prepare():
     create_impressum()
@@ -83,12 +83,19 @@ def git_webhook():
             os.chdir(root_path_repository)
 
             # Perform a git pull
-            subprocess.run(['git', 'pull'], check=True)
-
-            return "Git pull successful", 200
+            result = subprocess.run(['git', 'pull'], capture_output=True, text=True, check=True)
+            print(f"Git pull successful: {result.stdout}")
         except Exception as e:
             return f"Error: {str(e)}", 500
 
+
+        try:
+            command = ['pip', 'install', '-e', '.']
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            print("Output:", result.stdout)
+        except subprocess.CalledProcessError as e:
+            print("Error:", e.stderr)
+            return f'Error {str(e)}', 500
 
         # Next, we tell pythonanywhere to reload the app
 
