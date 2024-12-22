@@ -1,4 +1,4 @@
-name: reload forro-festivals.com
+name: reload forro_festivals-festivals.com
 
 on:
   push:
@@ -9,10 +9,9 @@ jobs:
   send-webhook:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "this is a test commit"
+      - run: echo "this is a test message"
       - name: Send POST request to external service
         run: |
-          curl -X POST https://external-service.com/webhook \
-               -H "Authorization: Bearer ${{ secrets.WEBHOOK_AUTH_TOKEN }}" \
+          curl -X POST \
                -H "Content-Type: application/json" \
-               -d '{"event": "github-push", "repository": "${{ github.repository }}"}'
+               www.forro-festivals.com/git-webkook?auth_token=${{ secrets.API_TOKEN }}
