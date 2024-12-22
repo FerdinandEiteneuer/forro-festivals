@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festival Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-top: 30px;
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: -2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Festival Schedule</h1>
+    {% for month, festivals in festivals_data.items() %}
+        <h2>{{ month }}</h2>
+        <ul>
+            {% for festival in festivals %}
+                <li>
+                    [{{ festival.location }}] {{ festival.date_start }} – {{ festival.date_end }} |
+                    <a href="{{ festival.link }}">{{ festival.link_text }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+    <nav>
+        <a href="/">Festivals</a> |
+        <a href="/about">About</a> |
+        <a href="/impressum">Impressum</a>
+    </nav>
+</body>
+</html>
