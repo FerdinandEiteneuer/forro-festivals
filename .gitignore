@@ -1,6 +1,9 @@
 private.json
 *.json
 
+# static pages
+static
+
 # Byte-compiled files
 __pycache__/
 *.py[cod]
