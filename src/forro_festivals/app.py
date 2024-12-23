@@ -73,9 +73,7 @@ def impressum():
 
 @app.route(f'/reload-bash', methods=['POST'])
 def reload_bash():
-
-    api_token = request.args.get('api_token')
-    if api_token != API_TOKEN:
+    if request.args.get('api_token') != API_TOKEN:
         return f"Unauthorized", 403
 
     if request.method == 'POST':
