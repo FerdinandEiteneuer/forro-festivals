@@ -71,65 +71,6 @@ def impressum():
     return app.send_static_file('impressum.html')
 
 
-@app.route(f'/reload-app', methods=['POST'])
-def git_webhook():
-    api_token = request.args.get('api_token')
-
-    if api_token != API_TOKEN:
-        return f"Unauthorized", 403
-
-    if request.method == 'POST':
-        try:
-            os.chdir(root_path_repository)
-
-            # Perform a git pull
-            result = subprocess.run(['git', 'pull'], capture_output=True, text=True, check=True)
-            print(f"Git pull successful: {result.stdout}")
-        except Exception as e:
-            return f"Error during git pull: {str(e)}", 500
-
-
-        try:
-            command = ['pip', 'install', '-e', '.']
-            result = subprocess.run(command, capture_output=True, text=True, check=True)
-            print("Output pip install:", result.stdout)
-        except Exception as e:
-            print("Error:", e.stderr)
-            return f'Error during pip install: {str(e)}', 500
-
-        # Next, we tell pythonanywhere to reload the app
-
-        url = f"https://www.pythonanywhere.com/api/v0/user/{USERNAME}/webapps/www.forro-festivals.com/reload/"
-
-        command = [
-            "curl",
-            "-X", "POST",
-            "-H", f"Authorization: Token {API_TOKEN}",
-            url
-        ]
-        command = ['bash', 'src/forro_festivals/scripts/reload-app.sh']
-        command = ['touch', '/var/www/www_forro-festivals_com_wsgi.py']
-        try:
-            result = subprocess.run(command, capture_output=True, text=True, check=True)
-            print("Output:", result.stdout, result.stderr)
-        except Exception as e:
-            print("Error during reloading:", e.stderr)
-        #import requests
-        #response = requests.post(
-        #    'https://www.pythonanywhere.com/api/v0/user/{username}/webapps/{domain_name}/reload/'.format(
-        #        username=USERNAME, domain_name='www.forro-festivals.com'
-        #    ),
-        #    headers={'Authorization': 'Token {token}'.format(token=api_token)}
-        #)
-        #if response.status_code == 200:
-        #    print('reloaded OK')
-        #else:
-        #    print('Got unexpected status code {}: {!r}'.format(response.status_code, response.content))
-        #    return "Error during reloading", 500
-
-    return "We reached the end", 200
-
-
 @app.route(f'/reload-bash', methods=['POST'])
 def reload_bash():
 
