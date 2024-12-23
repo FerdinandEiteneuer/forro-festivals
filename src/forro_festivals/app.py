@@ -108,6 +108,7 @@ def git_webhook():
             url
         ]
         command = ['bash', 'src/forro_festivals/scripts/reload-app.sh']
+        command = ['touch', '/var/www/www_forro-festivals_com_wsgi.py']
         try:
             result = subprocess.run(command, capture_output=True, text=True, check=True)
             print("Output:", result.stdout)
