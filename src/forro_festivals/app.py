@@ -107,11 +107,13 @@ def git_webhook():
             "-H", f"Authorization: Token {API_TOKEN}",
             url
         ]
+        command = ['bash', 'src/forro_festivals/scripts/reload-app.sh']
         try:
             result = subprocess.run(command, capture_output=True, text=True, check=True)
             print("Output:", result.stdout)
         except subprocess.CalledProcessError as e:
             print("Error during reloading:", e.stderr)
+
 
     return "Invalid request", 400
 
