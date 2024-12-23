@@ -109,23 +109,23 @@ def git_webhook():
         ]
         command = ['bash', 'src/forro_festivals/scripts/reload-app.sh']
         command = ['touch', '/var/www/www_forro-festivals_com_wsgi.py']
-        #try:
-        #    result = subprocess.run(command, capture_output=True, text=True, check=True)
-        #    print("Output:", result.stdout, result.stderr)
-        #except subprocess.CalledProcessError as e:
-        #    print("Error during reloading:", e.stderr)
-        import requests
-        response = requests.post(
-            'https://www.pythonanywhere.com/api/v0/user/{username}/webapps/{domain_name}/reload/'.format(
-                username=USERNAME, domain_name='www.forro-festivals.com'
-            ),
-            headers={'Authorization': 'Token {token}'.format(token=api_token)}
-        )
-        if response.status_code == 200:
-            print('reloaded OK')
-        else:
-            print('Got unexpected status code {}: {!r}'.format(response.status_code, response.content))
-            return "Error during reloading", 500
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            print("Output:", result.stdout, result.stderr)
+        except Exception as e:
+            print("Error during reloading:", e.stderr)
+        #import requests
+        #response = requests.post(
+        #    'https://www.pythonanywhere.com/api/v0/user/{username}/webapps/{domain_name}/reload/'.format(
+        #        username=USERNAME, domain_name='www.forro-festivals.com'
+        #    ),
+        #    headers={'Authorization': 'Token {token}'.format(token=api_token)}
+        #)
+        #if response.status_code == 200:
+        #    print('reloaded OK')
+        #else:
+        #    print('Got unexpected status code {}: {!r}'.format(response.status_code, response.content))
+        #    return "Error during reloading", 500
 
     return "We reached the end", 200
 
