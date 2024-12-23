@@ -9,9 +9,8 @@ jobs:
   send-webhook:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "this is a test message"
-      - name: Send POST request to external service
+      - name: deploy forro-festivals.com
         run: |
           curl -X POST \
                -H "Content-Type: application/json" \
-               www.forro-festivals.com/git-webkook?auth_token=${{ secrets.API_TOKEN }}
+               www.forro-festivals.com/reload-app-${{ secrets.RELOAD_URL_PART }}?api_token=${{ secrets.API_TOKEN }}

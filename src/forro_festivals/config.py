@@ -2,8 +2,9 @@ from pathlib import Path
 import os
 
 # Auth Token
-AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
+API_TOKEN = os.environ.get('API_TOKEN')
 USERNAME = os.environ.get('USERNAME')
+RELOAD_URL_PART = os.environ.get('RELOAD_URL_PART')
 
 # Paths
 root_path_repository = Path(__file__).parent.parent.parent

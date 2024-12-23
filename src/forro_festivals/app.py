@@ -5,7 +5,7 @@ import os
 from flask import Flask, render_template, request
 
 from forro_festivals.scripts.create_impressum import create_impressum
-from forro_festivals.config import AUTH_TOKEN, USERNAME, root_path_repository
+from forro_festivals.config import API_TOKEN, USERNAME, RELOAD_URL_PART, root_path_repository
 
 def prepare():
     create_impressum()
@@ -71,12 +71,12 @@ def impressum():
     return app.send_static_file('impressum.html')
 
 
-@app.route('/git-webhook', methods=['POST'])
+@app.route(f'/reload-app-{RELOAD_URL_PART}', methods=['POST'])
 def git_webhook():
-    auth_token = request.args.get('auth_token')
+    api_token = request.args.get('api_token')
 
-    if auth_token != AUTH_TOKEN:
-        return "Unauthorized", 403
+    if api_token != API_TOKEN:
+        return f"Unauthorized", 403
 
     if request.method == 'POST':
         try:
@@ -86,7 +86,7 @@ def git_webhook():
             result = subprocess.run(['git', 'pull'], capture_output=True, text=True, check=True)
             print(f"Git pull successful: {result.stdout}")
         except Exception as e:
-            return f"Error: {str(e)}", 500
+            return f"Error during git pull: {str(e)}", 500
 
 
         try:
@@ -95,7 +95,7 @@ def git_webhook():
             print("Output:", result.stdout)
         except subprocess.CalledProcessError as e:
             print("Error:", e.stderr)
-            return f'Error {str(e)}', 500
+            return f'Error during pip install: {str(e)}', 500
 
         # Next, we tell pythonanywhere to reload the app
 
@@ -104,14 +104,14 @@ def git_webhook():
         command = [
             "curl",
             "-X", "POST",
-            "-H", f"Authorization: Token {AUTH_TOKEN}",
+            "-H", f"Authorization: Token {API_TOKEN}",
             url
         ]
         try:
             result = subprocess.run(command, capture_output=True, text=True, check=True)
             print("Output:", result.stdout)
         except subprocess.CalledProcessError as e:
-            print("Error:", e.stderr)
+            print("Error during reloading:", e.stderr)
 
     return "Invalid request", 400
 
