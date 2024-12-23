@@ -132,19 +132,27 @@ def git_webhook():
 
 @app.route(f'/reload-bash', methods=['POST'])
 def reload_bash():
+
+    api_token = request.args.get('api_token')
+    if api_token != API_TOKEN:
+        return f"Unauthorized", 403
+
     if request.method == 'POST':
         try:
             os.chdir(root_path_repository)
 
             # Perform a git pull
             result = subprocess.run(['bash', 'src/forro_festivals/scripts/reload-all.sh'], capture_output=True, text=True, check=True)
-            print(f"successful: {result.stdout}")
-        except Exception as e:
-            print(f'{result.stdout=}')
-            print(f'{result.stderr=}')
-            return f"Error during reloding: {str(e)}", 500
+            stdout, stderr = result.stdout, result.stderr
 
-    return 'OK', 200
+            if result.returncode == 0:
+                return 'Deployment successfull', 200
+            else:
+                err_str = f'Deployment failed: {stdout=}, {stderr=}'
+                print(err_str)
+                return err_str, 500
+        except Exception as e:
+            return f"Exception during reloding: {str(e)}", 500
 
 if __name__ == '__main__':
     prepare()

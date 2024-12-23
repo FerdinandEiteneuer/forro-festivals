@@ -1,4 +1,4 @@
-name: reload forro_festivals-festivals.com
+name: reload forro-festivals.com
 
 on:
   push:
@@ -9,13 +9,8 @@ jobs:
   send-webhook:
     runs-on: ubuntu-latest
     steps:
-      #- name: deploy forro-festivals.com
-      #  run: |
-      #    curl -X POST \
-      #         -H "Content-Type: application/json" \
-      #         www.forro-festivals.com/reload-app?api_token=${{ secrets.API_TOKEN }}
-      - name: deploy forro-festivals.com 2
+      - name: deploy forro-festivals.com
         run: |
           curl -X POST \
                -H "Content-Type: application/json" \
-               www.forro-festivals.com/reload-bash
+               www.forro-festivals.com/reload-bash?api_token=${{ secrets.API_TOKEN }}
