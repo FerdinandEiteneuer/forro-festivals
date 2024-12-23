@@ -111,7 +111,7 @@ def git_webhook():
         command = ['touch', '/var/www/www_forro-festivals_com_wsgi.py']
         try:
             result = subprocess.run(command, capture_output=True, text=True, check=True)
-            print("Output:", result.stdout)
+            print("Output:", result.stdout, result.stderr)
         except subprocess.CalledProcessError as e:
             print("Error during reloading:", e.stderr)
 
