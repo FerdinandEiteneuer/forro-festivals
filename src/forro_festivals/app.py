@@ -92,8 +92,8 @@ def git_webhook():
         try:
             command = ['pip', 'install', '-e', '.']
             result = subprocess.run(command, capture_output=True, text=True, check=True)
-            print("Output:", result.stdout)
-        except subprocess.CalledProcessError as e:
+            print("Output pip install:", result.stdout)
+        except Exception as e:
             print("Error:", e.stderr)
             return f'Error during pip install: {str(e)}', 500
 
@@ -127,7 +127,7 @@ def git_webhook():
             print('Got unexpected status code {}: {!r}'.format(response.status_code, response.content))
             return "Error during reloading", 500
 
-    return "Invalid request", 400
+    return "We reached the end", 200
 
 
 if __name__ == '__main__':
