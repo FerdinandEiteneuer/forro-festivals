@@ -130,6 +130,22 @@ def git_webhook():
     return "We reached the end", 200
 
 
+@app.route(f'/reload-bash', methods=['POST'])
+def reload_bash():
+    if request.method == 'POST':
+        try:
+            os.chdir(root_path_repository)
+
+            # Perform a git pull
+            result = subprocess.run(['bash', 'src/forro_festivals/scripts/reload-all.sh'], capture_output=True, text=True, check=True)
+            print(f"successful: {result.stdout}")
+        except Exception as e:
+            print(f'{result.stdout=}')
+            print(f'{result.stderr=}')
+            return f"Error during reloding: {str(e)}", 500
+
+    return 'OK', 200
+
 if __name__ == '__main__':
     prepare()
     app.run(debug=True)
