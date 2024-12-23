@@ -71,7 +71,7 @@ def impressum():
     return app.send_static_file('impressum.html')
 
 
-@app.route(f'/reload-app-{RELOAD_URL_PART}', methods=['POST'])
+@app.route(f'/reload-app', methods=['POST'])
 def git_webhook():
     api_token = request.args.get('api_token')
 

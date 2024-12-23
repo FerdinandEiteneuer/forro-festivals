@@ -13,4 +13,4 @@ jobs:
         run: |
           curl -X POST \
                -H "Content-Type: application/json" \
-               www.forro-festivals.com/reload-app-${{ secrets.RELOAD_URL_PART }}?api_token=${{ secrets.API_TOKEN }}
+               www.forro-festivals.com/reload-app?api_token=${{ secrets.API_TOKEN }}
