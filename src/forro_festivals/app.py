@@ -91,7 +91,7 @@ def reload_bash():
                 print(err_str)
                 return err_str, 500
         except Exception as e:
-            return f"Exception during reloding: {str(e)}", 500
+            return f"Exception during reloading: {str(e)}", 500
 
 if __name__ == '__main__':
     prepare()
