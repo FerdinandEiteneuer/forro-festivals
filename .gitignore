@@ -1,6 +1,9 @@
 private.json
 *.json
 
+# database
+*.db
+
 # static pages
 static
 
