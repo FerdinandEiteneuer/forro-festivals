@@ -1,13 +1,16 @@
 import sqlite3
 from pathlib import Path
 from contextlib import contextmanager
+from typing import Tuple, List
 
 from forro_festivals.config import db_path
+from forro_festivals.scripts.event import Event
 
 
 @contextmanager
-def db_ops():
-    conn = sqlite3.connect(db_path)
+def db_ops(path):
+    conn = sqlite3.connect(path)
+    conn.row_factory = sqlite3.Row
     try:
         cur = conn.cursor()
         yield cur
@@ -20,18 +23,21 @@ def db_ops():
     finally:
         conn.close()
 
-
 class DataBase:
 
-    @staticmethod
-    def create():
+    path: str
+
+    def __init__(self, path):
+        self.path = path
+
+    def create(self):
         """
         Initializes db. Use with care, as it potentially removes existing db
         """
 
-        db_path.unlink(missing_ok=True)
+        self.path.unlink(missing_ok=True)
 
-        with db_ops() as cursor:
+        with db_ops(self.path) as cursor:
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS events (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,36 +46,46 @@ class DataBase:
                     city TEXT NOT NULL,
                     country TEXT NOT NULL,
                     link TEXT NOT NULL,
-                    UNIQUE (date_start, date_end, city, country)  -- Prevent duplicates
+                    link_text TEXT NOT NULL,
+                    source TEXT NOT NULL,  -- who/what created this entry?
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- when was this entry created?
+                    UNIQUE (date_start, date_end, city, country)  -- prevents duplicates
                 );
             """
             )
-
-    @staticmethod
-    def insert_event(date_start, date_end, city, country, link):
-        with db_ops() as cursor:
+    def insert_event(self, event: Event):
+        with db_ops(self.path) as cursor:
             cursor.execute("""
-                INSERT OR IGNORE INTO events (date_start, date_end, city, country, link)
-                VALUES (?, ?, ?, ?, ?)
-            """, (date_start, date_end, city, country, link))
+                INSERT OR IGNORE INTO events (date_start, date_end, city, country, link, link_text, source)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, event.to_tuple()
+            )
 
-    @staticmethod
-    def get_all_events():
-        with db_ops() as cursor:
+    def delete_event_by_id(self, event_id: int):
+        with db_ops(self.path) as cursor:
+            cursor.execute("""
+                DELETE FROM events
+                WHERE id = ?
+            """, (event_id,))
+            if cursor.rowcount == 0:
+                print("No row found with the given id.")
+            else:
+                print(f"Deleted {cursor.rowcount} row(s).")
+
+    def get_all_events(self) -> List[dict]:
+
+        with db_ops(self.path) as cursor:
             cursor.execute("SELECT * FROM events")
-            events = cursor.fetchall()
+            db_events = cursor.fetchall()
+
+        events = []
+        timestamps = []
+        for db_event in db_events:
+            event_ = dict(db_event)
+            created_at = event_.pop('created_at')
+            _ = event_.pop('id')
+
+            events.append(Event(**event_))
+            timestamps.append(created_at)
+
         return events
-
-
-if __name__ == '__main__':
-
-    db = DataBase()
-
-    db.create()
-
-    db.insert_event("2024-01-01", "2024-01-05", "Berlin", "Germany", "https://example.com")
-    db.insert_event("2024-02-04", "2024-02-08", "Hannover", "Germany", "https://example2.com")
-
-    # Example usage
-    for event in db.get_all_events():
-        print(event)
