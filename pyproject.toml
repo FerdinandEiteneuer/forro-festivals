@@ -10,14 +10,17 @@ authors = [
     { name = "Ferdinand Eiteneuer" }
 ]
 license = { file = "LICENSE" }
+readme = "README.md"
+
 dependencies = [
     "Flask",
     "pydantic"
 ]
+[project.optional-dependencies]
 test = [
     "pytest"
 ]
-readme = "README.md"
+
 keywords = ["flask", "web", "application"]
 classifiers = [
     "Programming Language :: Python :: 3",
