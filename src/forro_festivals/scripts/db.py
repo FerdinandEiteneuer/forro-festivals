@@ -1,9 +1,16 @@
-import sqlite3
-from pathlib import Path
-from contextlib import contextmanager
-from typing import Tuple, List
+"""
+Simple wrapper for a sqlite3 database
 
-from forro_festivals.config import db_path
+saves the Event datastructure together with
+* id
+* source
+* created_at timestamp
+"""
+
+import sqlite3
+from contextlib import contextmanager
+from typing import List
+
 from forro_festivals.scripts.event import Event
 
 
@@ -15,7 +22,6 @@ def db_ops(path):
         cur = conn.cursor()
         yield cur
     except Exception as e:
-        # do something with exception
         conn.rollback()
         raise e
     else:
@@ -24,9 +30,6 @@ def db_ops(path):
         conn.close()
 
 class DataBase:
-
-    path: str
-
     def __init__(self, path):
         self.path = path
 
@@ -73,7 +76,6 @@ class DataBase:
                 print(f"Deleted {cursor.rowcount} row(s).")
 
     def get_all_events(self) -> List[dict]:
-
         with db_ops(self.path) as cursor:
             cursor.execute("SELECT * FROM events")
             db_events = cursor.fetchall()
