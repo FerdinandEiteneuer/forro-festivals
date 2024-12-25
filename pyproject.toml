@@ -12,6 +12,10 @@ authors = [
 license = { file = "LICENSE" }
 dependencies = [
     "Flask",
+    "pydantic"
+]
+test = [
+    "pytest"
 ]
 readme = "README.md"
 keywords = ["flask", "web", "application"]
