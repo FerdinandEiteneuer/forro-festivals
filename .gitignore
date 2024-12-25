@@ -23,3 +23,6 @@ dist/
 *.swo
 *~
 .idea/
+
+# ignore / trash folder / ideas I might come back to
+ignore
