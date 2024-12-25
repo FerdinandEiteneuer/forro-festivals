@@ -75,9 +75,8 @@ def impressum():
 def reload_bash():
     api_token = request.args.get('api_token')
     if api_token != API_TOKEN:
-        if api_token is None:
-            return 'api token is None', 403
-        return f"Unauthorized {api_token[:4]}!={API_TOKEN[:4]}", 403
+        print(f"Unauthorized {api_token[:4]}!={API_TOKEN[:4]}")
+        return "Unauthorized", 403
 
     if request.method == 'POST':
         try:
