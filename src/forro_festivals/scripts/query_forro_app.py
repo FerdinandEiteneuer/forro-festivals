@@ -36,8 +36,9 @@ def parse_forro_app_single_item(event: dict):
         'city': city,
         'country': event['location'][0]['data']['countryLongName'],
         'organizer': event['host_details']['username'],
+        'uuid': event['uuid'],
+        'link': link,
         'link_text': event['name'],
-        'link': link
     }
 
 def parse_forro_app_query(query):

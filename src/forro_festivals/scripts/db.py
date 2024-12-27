@@ -74,20 +74,22 @@ class DataBase:
                     city TEXT NOT NULL,
                     country TEXT NOT NULL,
                     organizer TEXT NOT NULL,
+                    uuid TEXT NOT NULL,
                     link TEXT NOT NULL,
                     link_text TEXT NOT NULL,
                     validated  BOOLEAN DEFAULT TRUE,  -- indicates whether to show the event, defaults to TRUE
                     source TEXT NOT NULL,  -- who/what created this entry?
                     timestamp TEXT NOT NULL,  -- when was this entry created? 
-                    UNIQUE (date_start, date_end, city, country)  -- prevents duplicates
+                    UNIQUE (date_start, date_end, city, country, organizer)  -- prevents duplicates
+                    -- Note: If i change the link_text manually in the db, readding the same event from the db 
                 );
             """
             )
     def insert_event(self, event: Event):
         with db_ops(self.path) as cursor:
             cursor.execute("""
-                INSERT OR IGNORE INTO events (date_start, date_end, city, country, organizer, link, link_text, validated, source, timestamp)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT OR IGNORE INTO events (date_start, date_end, city, country, organizer, uuid, link, link_text, validated, source, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, event.to_tuple()
             )
 

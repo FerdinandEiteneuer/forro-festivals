@@ -17,6 +17,7 @@ class Event(BaseModel):
     city: str
     country: str
     organizer: str
+    uuid: str = 'None'
     link: str
     link_text: str
     validated: bool = True
