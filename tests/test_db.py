@@ -59,5 +59,3 @@ def test_db():
 
         db.delete_event_by_id(event_id=1)
         assert db.get_size() == 2
-
-
