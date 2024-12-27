@@ -32,15 +32,17 @@ class Event(BaseModel):
     # Root validator to compare date_end with date_start
     @model_validator(mode='after')
     def check_dates(cls, event):
-        date_start = event.date_start
-        date_end = event.date_end
-
-        start = datetime.strptime(date_start, date_fmt_ymd)
-        end = datetime.strptime(date_end, date_fmt_ymd)
-
-        if end < start:
-            raise ValueError(f"{date_end=}) must be later than {date_start=}")
+        if event.start > event.end:
+            raise ValueError(f"{event.date_end=}) must come after than {event.date_start=}")
         return event
 
     def to_tuple(self):
         return tuple(self.model_dump().values())
+
+    @property
+    def start(self):
+        return datetime.strptime(self.date_start, date_fmt_ymd)
+
+    @property
+    def end(self):
+        return datetime.strptime(self.date_end, date_fmt_ymd)
