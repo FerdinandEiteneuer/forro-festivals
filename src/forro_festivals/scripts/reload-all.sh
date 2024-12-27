@@ -2,6 +2,7 @@
 
 cd /home/feiteneuer/forro-festivals
 
+git fetch --all
 git reset --hard origin/master
 
 # This is reloads the app since pythonanywhere is checking for file changes
