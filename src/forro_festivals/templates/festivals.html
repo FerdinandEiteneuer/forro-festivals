@@ -35,7 +35,7 @@
 </head>
 <body>
     <h1>Festival Schedule</h1>
-    {% for month, festivals in festivals_data.items() %}
+    {% for month, festivals in data.items() %}
         <h2>{{ month }}</h2>
         <ul>
             {% for festival in festivals %}
