@@ -28,14 +28,10 @@ def backup_db():
 def update_db(events: List[Event]):
     db = DataBase(db_path)
     N_before = db.get_size()
-
     for event in events:
         db.insert_event(event)
-
     N_after = db.get_size()
 
-    if N_after - N_before != len(events):
-        raise ValueError(f'Not all events could be inserted into the db')
 
 def get_events_from_db():
     db = DataBase(db_path)
