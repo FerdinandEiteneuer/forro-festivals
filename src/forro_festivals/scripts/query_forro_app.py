@@ -30,11 +30,12 @@ def parse_forro_app_single_item(event: dict):
     link = f'https://service.filora.eu/plugin/event/{owner_id}?style=card&backgroundColor=ffffff&filter_tags=5155a1d1-bdc8-4436-ad04-467fb27ccbae&filter_domain=forr%C3%B3'
 
     return {
-        # Note(fe): The [:10] just assumes the date is in '%Y-%m-%d'
+        # Note(fe): The [:10] just assumes the date is in 'yyyy-mm-dd'
         'date_start': event['start_date'][:10],
         'date_end': event['end_date'][:10],
         'city': city,
         'country': event['location'][0]['data']['countryLongName'],
+        'organizer': event['host_details']['username'],
         'link_text': event['name'],
         'link': link
     }
@@ -45,7 +46,6 @@ def parse_forro_app_query(query):
          print(f'no "results" in {list(query.keys())}')
          return events
     for i, event_data in enumerate(query['results']):
-        print(i)
         try:
             event_dict = parse_forro_app_single_item(event_data)
             if event_dict:

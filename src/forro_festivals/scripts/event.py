@@ -16,6 +16,7 @@ class Event(BaseModel):
     date_end: str
     city: str
     country: str
+    organizer: str
     link: str
     link_text: str
     validated: bool = True
