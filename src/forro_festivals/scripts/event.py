@@ -22,6 +22,14 @@ class Event(BaseModel):
     source: str
     timestamp: str = Field(default_factory=get_timestamp)  # refers to object creation timestamp
 
+    @property
+    def start(self):
+        return datetime.strptime(self.date_start, date_fmt_ymd)
+
+    @property
+    def end(self):
+        return datetime.strptime(self.date_end, date_fmt_ymd)
+
     @field_validator('date_start', 'date_end')
     def validate_start_end_dates(cls, value):
         date_pattern = r'^\d{4}-\d{2}-\d{2}$'
@@ -38,11 +46,3 @@ class Event(BaseModel):
 
     def to_tuple(self):
         return tuple(self.model_dump().values())
-
-    @property
-    def start(self):
-        return datetime.strptime(self.date_start, date_fmt_ymd)
-
-    @property
-    def end(self):
-        return datetime.strptime(self.date_end, date_fmt_ymd)
