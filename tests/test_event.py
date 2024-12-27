@@ -5,8 +5,8 @@ from forro_festivals.scripts.event import Event
 
 def test_valid_event():
     e = Event(
-        date_start='10-02-2024',
-        date_end='12-02-2024',
+        date_start='2024-10-02',
+        date_end='2024-10-06',
         city='Cologne',
         country='Germany',
         link='https://www.example.com',
@@ -15,8 +15,8 @@ def test_valid_event():
     )
 
     assert e.city == 'Cologne'
-    assert e.date_start == '10-02-2024'
-    assert e.date_end == '12-02-2024'
+    assert e.date_start == '2024-10-02'
+    assert e.date_end == '2024-10-06'
     assert e.city == 'Cologne'
     assert e.country == 'Germany'
     assert e.link == 'https://www.example.com'
@@ -28,7 +28,7 @@ def test_valid_event():
     'event',
     [
         dict(
-            date_start='10-02-2024-23',
+            date_start='10-02-2024',
             date_end='12-02-2024',
             city='Cologne',
             country='Germany',
@@ -37,8 +37,8 @@ def test_valid_event():
             source='tester',
         ),
         dict(
-            date_start='15-02-2024',
-            date_end='12-02-2024',
+            date_start='2024-02-12',
+            date_end='2024-02-10',
             city='Cologne',
             country='Germany',
             link='https://www.example.com',
