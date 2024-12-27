@@ -59,11 +59,11 @@ def parse_forro_app_query(query):
 
 def get_forro_app_events():
     url = get_api_url()
-    #query = requests.get(url)
+    query = requests.get(url)
 
-    with open('response.json', 'r') as file:
-        import json
-        query = json.load(file)
+    #with open('response.json', 'r') as file:
+    #    import json
+    #    query = json.load(file)
 
     events = parse_forro_app_query(query)
     return events
