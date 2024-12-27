@@ -56,7 +56,7 @@ def parse_forro_app_query(query):
             print(f'could not parse {event_data}.\n\nreason:\n{e}')
     return events
 
-def get_all_forro_events():
+def get_forro_app_events():
     url = get_api_url()
     #query = requests.get(url)
 
