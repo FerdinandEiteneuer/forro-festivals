@@ -22,4 +22,4 @@ db_backup_folder = Path(os.environ.get('HOME')) / 'backups_db'
 
 # date formats
 date_fmt_ymd = '%Y-%m-%d'  # yyyy-mm-dd
-date_fmt_ymd_hms = '%Y-%m-%d-%H-%M-%s'  # yyyy-mm-dd-hh-mm-ss'
+date_fmt_ymd_hms = '%Y-%m-%d-%H-%M-%S'  # yyyy-mm-dd-hh-mm-ss'
