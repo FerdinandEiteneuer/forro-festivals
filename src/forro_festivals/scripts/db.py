@@ -50,8 +50,9 @@ class DataBase:
                     country TEXT NOT NULL,
                     link TEXT NOT NULL,
                     link_text TEXT NOT NULL,
+                    validated  BOOLEAN DEFAULT TRUE,  -- indicates whether to show the event, defaults to TRUE
                     source TEXT NOT NULL,  -- who/what created this entry?
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- when was this entry created?
+                    timestamp TEXT NOT NULL,  -- when was this entry created? 
                     UNIQUE (date_start, date_end, city, country)  -- prevents duplicates
                 );
             """
@@ -59,8 +60,8 @@ class DataBase:
     def insert_event(self, event: Event):
         with db_ops(self.path) as cursor:
             cursor.execute("""
-                INSERT OR IGNORE INTO events (date_start, date_end, city, country, link, link_text, source)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT OR IGNORE INTO events (date_start, date_end, city, country, link, link_text, validated, source, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, event.to_tuple()
             )
 
@@ -81,13 +82,11 @@ class DataBase:
             db_events = cursor.fetchall()
 
         events = []
-        timestamps = []
         for db_event in db_events:
             event_ = dict(db_event)
-            created_at = event_.pop('created_at')
             _ = event_.pop('id')
-
             events.append(Event(**event_))
-            timestamps.append(created_at)
-
         return events
+
+    def get_size(self) -> int:
+        return len(self.get_all_events())
