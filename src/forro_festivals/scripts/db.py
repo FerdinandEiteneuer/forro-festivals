@@ -10,8 +10,33 @@ saves the Event datastructure together with
 import sqlite3
 from contextlib import contextmanager
 from typing import List
+from datetime import datetime
+import shutil
 
 from forro_festivals.scripts.event import Event
+from forro_festivals.config import db_path, db_backup_folder
+
+
+def backup_db():
+    db_backup_folder.mkdir(exist_ok=True)
+    timestamp = datetime.today().strftime('%y-%m-%d--%H-%m-%S')
+    shutil.copy(db_path, db_backup_folder / f'festivals-{timestamp}')
+
+def update_db(events: List[Event]):
+    db = DataBase(db_path)
+    N_before = db.get_size()
+
+    for event in events:
+        db.insert_event(event)
+
+    N_after = db.get_size()
+
+    if N_after - N_before != len(events):
+        raise ValueError(f'Not all events could be inserted into the db')
+
+def get_events_from_db():
+    db = DataBase(db_path)
+    return db.get_all_events()
 
 
 @contextmanager
