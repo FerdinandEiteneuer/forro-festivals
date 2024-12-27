@@ -73,6 +73,7 @@ class DataBase:
                     date_end TEXT NOT NULL,
                     city TEXT NOT NULL,
                     country TEXT NOT NULL,
+                    organizer TEXT NOT NULL,
                     link TEXT NOT NULL,
                     link_text TEXT NOT NULL,
                     validated  BOOLEAN DEFAULT TRUE,  -- indicates whether to show the event, defaults to TRUE
@@ -85,8 +86,8 @@ class DataBase:
     def insert_event(self, event: Event):
         with db_ops(self.path) as cursor:
             cursor.execute("""
-                INSERT OR IGNORE INTO events (date_start, date_end, city, country, link, link_text, validated, source, timestamp)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT OR IGNORE INTO events (date_start, date_end, city, country, organizer, link, link_text, validated, source, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, event.to_tuple()
             )
 
