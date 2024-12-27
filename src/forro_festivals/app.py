@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, render_template, request
 
-from forro_festivals.scripts.create_impressum import create_impressum
+from forro_festivals.scripts.create_impressum_html import create_impressum
 from forro_festivals.config import API_TOKEN, USERNAME, RELOAD_URL_PART, root_path_repository
 
 def prepare():

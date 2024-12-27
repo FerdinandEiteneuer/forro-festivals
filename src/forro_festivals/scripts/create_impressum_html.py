@@ -8,7 +8,7 @@ def load_private_data(path):
     with open(path, 'r') as f:
         return json.load(f)
 
-def create_impressum(template='impressum.html'):
+def create_impressum_html(template='impressum.html'):
     private_data = load_private_data(private_json)
 
     app = Flask(__name__, root_path=root_path_flask)
@@ -21,4 +21,4 @@ def create_impressum(template='impressum.html'):
 
 
 if __name__ == '__main__':
-    create_impressum()
+    create_impressum_html()
