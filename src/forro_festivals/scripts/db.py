@@ -16,6 +16,9 @@ import shutil
 from forro_festivals.scripts.event import Event
 from forro_festivals.config import db_path, db_backup_folder
 
+def init_db():
+    db = DataBase(db_path)
+    db.create()
 
 def backup_db():
     db_backup_folder.mkdir(exist_ok=True)
