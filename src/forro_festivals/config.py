@@ -18,3 +18,8 @@ template_folder = root_path_flask / 'template'
 # data paths
 private_json = root_path_repository / 'data/private.json'
 db_path = root_path_repository / 'data/festivals.db'
+db_backup_folder = Path(os.environ.get('HOME')) / 'backups_db'
+
+# date formats
+date_fmt_ymd = '%Y-%m-%d'  # yyyy-mm-dd
+date_fmt_ymd_hms = '%Y-%m-%d-%H-%M-%s'  # yyyy-mm-dd-hh-mm-ss'
