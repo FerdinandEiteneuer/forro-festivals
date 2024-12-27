@@ -90,10 +90,12 @@ def reload_bash():
                 return 'Deployment successfull', 200
             else:
                 err_str = f'Deployment failed: {stdout=}, {stderr=}'
-                print(err_str)
-                return err_str, 500
         except Exception as e:
-            return f"Exception during reloading: {str(e)}", 500
+            err_str = f"Exception during reloading: {str(e)}"
+
+        print(err_str)
+        return err_str, 500
+
 
 if __name__ == '__main__':
     prepare()
