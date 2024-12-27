@@ -18,7 +18,7 @@ class Event(BaseModel):
     country: str
     link: str
     link_text: str
-    valid: bool = True
+    validated: bool = True
     source: str
     timestamp: str = Field(default_factory=get_timestamp)  # refers to object creation timestamp
 
