@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from forro_festivals.scripts.event import Event
@@ -9,6 +11,7 @@ def test_valid_event():
         date_end='2024-10-06',
         city='Cologne',
         country='Germany',
+        organizer='testor',
         link='https://www.example.com',
         link_text='example',
         source='tester',
@@ -19,9 +22,12 @@ def test_valid_event():
     assert e.date_end == '2024-10-06'
     assert e.city == 'Cologne'
     assert e.country == 'Germany'
+    assert e.organizer == 'testor'
     assert e.link == 'https://www.example.com'
     assert e.link_text == 'example'
     assert e.source == 'tester'
+    assert e.start == datetime(year=2024, month=10, day=2)
+    assert e.end == datetime(year=2024, month=10, day=6)
 
 
 @pytest.mark.parametrize(
@@ -32,6 +38,7 @@ def test_valid_event():
             date_end='12-02-2024',
             city='Cologne',
             country='Germany',
+            organizer='failbob',
             link='https://www.example.com',
             link_text='testomat',
             source='tester',
@@ -41,6 +48,7 @@ def test_valid_event():
             date_end='2024-02-10',
             city='Cologne',
             country='Germany',
+            organizer='failbob',
             link='https://www.example.com',
             link_text='testomat',
             source='tester',
