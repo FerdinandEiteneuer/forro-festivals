@@ -5,7 +5,7 @@ cd /home/feiteneuer/forro-festivals
 git fetch --all
 git reset --hard origin/master
 
-python src/forro_festivals/render_html_pages.py
+python src/forro_festivals/scripts/render_html_pages.py
 
 # This is reloads the app since pythonanywhere is checking for file changes
 # to the wsgi file and reloads the app upon last changed
