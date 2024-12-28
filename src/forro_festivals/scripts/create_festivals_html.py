@@ -10,7 +10,8 @@ from forro_festivals.scripts.event import Event
 from forro_festivals.scripts.db import get_events_from_db
 
 
-def create_festivals_html(events: List[Event], template='festivals.html'):
+def create_festivals_html(template='festivals.html'):
+    events = get_events_from_db()
     festival_data = format_festival_data(events)
 
     app = Flask(__name__, root_path=root_path_flask)
@@ -45,17 +46,4 @@ def format_festival_data(events: List[Event]):
 
 
 if __name__ == '__main__':
-    template = 'festivals.html'
-
-    events = get_events_from_db()
-    festival_data = format_festival_data(events)
-
-    print(festival_data)
-
-    app = Flask(__name__, root_path=root_path_flask)
-    with app.app_context():
-        festivals = render_template(template, data=festival_data)
-
-    static_folder.mkdir(exist_ok=True)
-    with open(f'{static_folder}/{template}', 'w') as file:
-        file.write(festivals)
+    create_festivals_html()
