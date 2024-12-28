@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # exit with non-zero exist state if one command fails
 
 cd /home/feiteneuer/forro-festivals
 
