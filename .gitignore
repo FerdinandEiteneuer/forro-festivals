@@ -2,11 +2,13 @@
 data
 private.json
 *.json
+
 # database
 *.db
 
 # static pages
-static
+src/forro_festivals/static/*
+!src/forro_festivals/static/favicon.ico
 
 # Byte-compiled files
 __pycache__/
