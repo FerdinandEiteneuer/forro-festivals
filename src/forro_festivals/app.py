@@ -2,10 +2,10 @@ import json
 import subprocess
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 
 from forro_festivals.scripts.create_impressum_html import create_impressum_html
-from forro_festivals.config import API_TOKEN, USERNAME, RELOAD_URL_PART, root_path_repository
+from forro_festivals.config import API_TOKEN, USERNAME, RELOAD_URL_PART, root_path_repository, static_folder
 
 def prepare():
     create_impressum_html()
@@ -56,6 +56,10 @@ festivals_data = {
     ]
 }
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(static_folder, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 def festivals():
