@@ -16,8 +16,14 @@ from forro_festivals.scripts.event import Event
 
 def get_api_url():
     """Creates the url of the forro-app.com API used to gather the festival data"""
-    today = datetime.today().strftime('%y-%m-%d')
-    return f'https://api.filora.eu/events/?filter_tags=5155a1d1-bdc8-4436-ad04-467fb27ccbae&filter_domain=forró&filter_start_date_gt={today}T23:00:44.277Z&ordering=start_date'
+
+    # Note: the request can return 'next'. We ignore this currently because the festival
+    #       count returned is smaller than 30 at the time of this writing and navigating through
+    #       all results is not yet necessary
+    base_url = 'https://service.filora.eu/api/events'
+    filter_tags = '5155a1d1-bdc8-4436-ad04-467fb27ccbae'
+    date_filter = datetime.today().strftime('%Y-%m-%dT%H:%M:%S')
+    return f'{base_url}/?filter_tags={filter_tags}&filter_domain=forró&filter_start_date_gt={date_filter}&ordering=start_date'
 
 
 def parse_forro_app_single_item(event: dict):
@@ -59,24 +65,15 @@ def parse_forro_app_query(query):
 
 def get_forro_app_events():
     url = get_api_url()
-    query = requests.get(url)
-
-    #with open('response.json', 'r') as file:
-    #    import json
-    #    query = json.load(file)
-
-    events = parse_forro_app_query(query)
+    request = requests.get(url)
+    events = parse_forro_app_query(request.json())
     return events
 
 
 if __name__ == '__main__':
     url = get_api_url()
-
-    with open('response.json', 'r') as file:
-        import json
-        query = json.load(file)
-
-    events = parse_forro_app_query(query)
+    request = requests.get(url)
+    events = parse_forro_app_query(request.json())
 
     for event in events:
         print(event)
