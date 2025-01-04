@@ -74,17 +74,17 @@
 
 
         form {
+            max-width: 360px;
             background: #cacaca;
-            padding: 20px;
+            padding: 12px;
             margin: 0 15px 20px;
             border-radius: 8px;
-            border: line;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px grey;
         }
 
 
         .form-container {
-            max-width: 840px;
+            /*max-width: 840px;*/
             /*margin: 0 auto;*/
             background-color: #fff;
             border-radius: 8px;
@@ -93,8 +93,7 @@
 
         button {
             background-color: #cacaca;  /* Grey background */
-            padding: 10px 20px;         /* Padding inside the button */
-            border: line;               /* Remove the default border */
+            padding: 7px 18px;         /* Padding inside the button */
             border-radius: 8px;        /* Make the edges rounded */
             cursor: pointer;           /* Change the cursor to a pointer when hovering */
             font-size: 16px;            /* Set the font size */
@@ -120,24 +119,26 @@
         Please be patient—it might take a few days, but I’ll get to it as soon as I can.
     </p>
 
+
     <div class="form-container">
         <form method="POST">
             <table>
                 <tr>
                     <td><label for="link_text">Festival</label></td>
                     <td><input type="text" id="link_text" name="link_text" value="{{ data.link_text }}" placeholder="Name of the Festival" required></td>
+                </tr><tr>
                     <td><label for="link">Link</label></td>
                     <td><input type="url" id="link" name="link" value="{{ data.link }}" placeholder="Link to the Festival"required></td>
-                </tr>
-                <tr>
+                </tr><tr>
                     <td><label for="city">City</label></td>
                     <td><input type="text" id="city" name="city" value="{{ data.city }}" placeholder="City of Festival" required></td>
+                </tr><tr>
                     <td><label for="country">Country</label></td>
                     <td><input type="text" id="country" name="country" value="{{ data.country }}" placeholder="Country of Festival"required></td>
-                </tr>
-                <tr>
+                </tr><tr>
                     <td><label for="date_start">Start Date</label></td>
                     <td><input type="text" id="date_start" name="start_date" value="{{ data.date_start }}" placeholder="Festival start day"required></td>
+                </tr><tr>
                     <td><label for="date_end">End Date</label></td>
                     <td><input type="text" id="date_end" name="date_end" value="{{ data.date_end }}" placeholder="Festival end day" required></td>
                 </tr>
