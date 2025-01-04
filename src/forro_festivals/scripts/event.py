@@ -12,6 +12,7 @@ def get_timestamp():
     return datetime.now().strftime(date_fmt_ymd_hms)
 
 class Event(BaseModel):
+    # Note: potentially, I can add a date for the start of the ticket sell
     date_start: str
     date_end: str
     city: str
