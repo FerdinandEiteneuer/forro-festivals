@@ -66,7 +66,6 @@ def favicon():
 @app.route('/')
 def festivals():
     return app.send_static_file('festivals.html')
-    #return render_template('festivals.html', festivals_data=festivals_data)
 
 @app.route('/about')
 def about_page():
