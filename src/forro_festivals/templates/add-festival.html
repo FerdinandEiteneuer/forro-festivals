@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Form</title>
+
+    <!-- Include flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Include jQuery for AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Include flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Initialize flatpickr for start date input
+            flatpickr("#date_start", {
+                dateFormat: "Y-m-d", // Internal format (what gets submitted)
+                altInput: true, // Use an alternative input to show the external format
+                altFormat: "F j, Y", // External format (what the user sees, eg. August 2, 2025)
+            });
+
+            // Initialize flatpickr for end date input
+            flatpickr("#date_end", {
+                dateFormat: "Y-m-d", // Internal format (what gets submitted)
+                altInput: true, // Use an alternative input to show the external format
+                altFormat: "F j, Y", // External format (what the user sees, eg. August 2, 2025)
+            });
+
+            var errorBox = document.getElementById('error-box');
+            var errorText = document.getElementById('error-text');
+            var successBox = document.getElementById('success-box');
+            var successText = document.getElementById('success-text');
+
+            // Handle form submission via AJAX
+            $("button[type='submit']").click(function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Send form data via AJAX
+                $.ajax({
+                    url: "/add-festival",  // Adjust the URL if necessary
+                    method: "POST",
+                    data: {
+                        link_text: $("#link_text").val(),
+                        city: $("#city").val(),
+                        country: $("#country").val(),
+                        date_start: $("#date_start").val(),
+                        date_end: $("#date_end").val(),
+                        link: $("#link").val()
+                    },
+                    success: function(response) {
+                        // If success, hide error message and display success msg
+                        errorBox.style.display = 'none';
+
+                        successBox.style.display = 'block'
+                        successText.innerHTML = response.html_msg;
+
+                        $("form")[0].reset();
+                    },
+                    error: function(xhr, status, error) {
+                        successBox.style.display = 'none'
+
+                        errorText.innerHTML = xhr.responseJSON.error || 'Unknown Error';
+                        errorBox.style.display = 'block'; // Show the error div
+                    }
+                });
+            });
+
+        });
+    </script>
+
+    <style>
+        /* Basic reset and styling */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding: 10;
+        }
+        li {
+            margin-bottom: -7px;
+        }
+
+        form {
+            background: #cacaca;
+            padding: 20px;
+            margin: 0 15px 20px;
+            border-radius: 8px;
+            border: line;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+
+
+        .form-container {
+            max-width: 840px;
+            /*margin: 0 auto;*/
+            background-color: #fff;
+            border-radius: 8px;
+            /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
+        }
+
+        button {
+            background-color: #cacaca;  /* Grey background */
+            padding: 10px 20px;         /* Padding inside the button */
+            border: line;               /* Remove the default border */
+            border-radius: 8px;        /* Make the edges rounded */
+            cursor: pointer;           /* Change the cursor to a pointer when hovering */
+            font-size: 16px;            /* Set the font size */
+            transition: background-color 0.3s ease;  /* Smooth transition on hover */
+            margin-left: 13px;  /* Move the button slightly to the right */
+        }
+
+        button:hover {
+            background-color: #b5b5b5;  /* A bit darker on hover */
+        }
+
+    </style>
+
+</head>
+</head>
+<body>
+    <h1>Add a Festival</h1>
+    <p>ℹ Note: The following form is currently in development and not yet connected to anything!</p>
+    <p>Thank you for contributing 😊. In the form below, just fill in the details of the festival.</p>
+    <p>Once you're done, click the "Save Event" button below.
+        I'll review your submission and add it to the list!
+        Please be patient—it might take a few days, but I’ll get to it as soon as I can.
+    </p>
+
+    <div class="form-container">
+        <form method="POST">
+            <table>
+                <tr>
+                    <td><label for="link_text">Festival</label></td>
+                    <td><input type="text" id="link_text" name="link_text" value="{{ data.link_text }}" placeholder="Name of the Festival" required></td>
+                    <td><label for="link">Link</label></td>
+                    <td><input type="url" id="link" name="link" value="{{ data.link }}" placeholder="Link to the Festival"required></td>
+                </tr>
+                <tr>
+                    <td><label for="city">City</label></td>
+                    <td><input type="text" id="city" name="city" value="{{ data.city }}" placeholder="City of Festival" required></td>
+                    <td><label for="country">Country</label></td>
+                    <td><input type="text" id="country" name="country" value="{{ data.country }}" placeholder="Country of Festival"required></td>
+                </tr>
+                <tr>
+                    <td><label for="date_start">Start Date</label></td>
+                    <td><input type="text" id="date_start" name="start_date" value="{{ data.date_start }}" placeholder="Festival start day"required></td>
+                    <td><label for="date_end">End Date</label></td>
+                    <td><input type="text" id="date_end" name="date_end" value="{{ data.date_end }}" placeholder="Festival end day" required></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <button type="submit">Save Event</button>
+
+    <!-- Error Message -->
+    <div id="error-box" style="display:none; color: #fff; background-color: #f44336; border: 3px solid #d32f2f; padding: 15px; margin: 20px 0; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); font-weight: bold; position: relative;">
+        <span id="error-text"></span>
+        <button onclick="this.parentElement.style.display='none'" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #fff; font-size: 16px; cursor: pointer;">&times;</button>
+    </div>
+
+    <!-- Success Message -->
+    <div id="success-box" style="display:none; color: #fff; background-color: #4CAF50; border: 3px solid #388E3C; padding: 15px; margin: 20px 0; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); font-weight: bold; position: relative;">
+        <span id="success-text"></span>
+        <button onclick="this.parentElement.style.display='none'" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #fff; font-size: 16px; cursor: pointer;">&times;</button>
+    </div>
+
+    <hr>
+    <nav>
+        <a href="/">Festivals</a> |
+        <a href="/about">About</a> |
+        <a href="/impressum">Impressum</a> |
+        <a href="/add-festival">Add Festival</a>
+    </nav>
+
+</body>
+</html>

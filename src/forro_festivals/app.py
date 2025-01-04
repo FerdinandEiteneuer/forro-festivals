@@ -1,11 +1,13 @@
-import json
 import subprocess
 import os
 
-from flask import Flask, render_template, request, send_from_directory
+from pydantic import ValidationError
+from flask import Flask, render_template, request, send_from_directory, jsonify
 
 from forro_festivals.scripts.create_impressum_html import create_impressum_html
-from forro_festivals.config import API_TOKEN, USERNAME, RELOAD_URL_PART, root_path_repository, static_folder
+from forro_festivals.config import API_TOKEN, root_path_repository, static_folder
+from forro_festivals.scripts.event import Event
+
 
 def prepare():
     create_impressum_html()
@@ -101,6 +103,22 @@ def reload_bash():
         print(err_str)
         return err_str, 500
 
+
+
+@app.route('/add-festival', methods=['GET', 'POST'])
+def form():
+    if request.method == 'GET':
+        return render_template("add-festival.html", data={}), 200
+    elif request.method == "POST":
+        app.logger.info(f'button press?')
+        try:
+            app.logger.info(request.form)
+            event = Event.from_request(request)
+            success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
+            return jsonify({'html_msg': success_msg}), 200
+        except ValidationError as exc:
+            err_msg = Event.human_readable_validation_error_explanation(exc)
+            return jsonify({'error': err_msg}), 400
 
 if __name__ == '__main__':
     prepare()
