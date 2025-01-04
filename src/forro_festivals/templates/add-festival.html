@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Form</title>
+{% extends "base.html" %}
 
+{% block head %}
     <!-- Include flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
@@ -75,29 +71,7 @@
 
     <style>
         /* Basic reset and styling */
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
 
-        ul {
-            list-style-type: disc;
-            padding: 10;
-        }
-        li {
-            margin-bottom: -7px;
-        }
 
         form {
             background: #cacaca;
@@ -106,12 +80,6 @@
             border-radius: 8px;
             border: line;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid #ddd;
-            margin: 20px 0;
         }
 
 
@@ -140,9 +108,10 @@
 
     </style>
 
-</head>
-</head>
-<body>
+{% endblock %}
+
+
+{% block content %}
     <h1>Add a Festival</h1>
     <p>ℹ Note: The following form is currently in development and not yet connected to anything!</p>
     <p>Thank you for contributing 😊. In the form below, just fill in the details of the festival.</p>
@@ -189,14 +158,4 @@
         <span id="success-text"></span>
         <button onclick="this.parentElement.style.display='none'" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #fff; font-size: 16px; cursor: pointer;">&times;</button>
     </div>
-
-    <hr>
-    <nav>
-        <a href="/">Festivals</a> |
-        <a href="/about">About</a> |
-        <a href="/impressum">Impressum</a> |
-        <a href="/add-festival">Add Festival</a>
-    </nav>
-
-</body>
-</html>
+{% endblock %}
