@@ -9,6 +9,7 @@ private.json
 # static pages
 src/forro_festivals/static/*
 !src/forro_festivals/static/favicon.ico
+!src/forro_festivals/static/styles.css
 
 # Byte-compiled files
 __pycache__/

@@ -1,38 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forró Festivals</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-        }        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        h2 {
-            margin-top: 30px;
-            color: #333;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin-bottom: -2px;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
     <h1>About</h1>
 
     <p>Hey Forrozeir@s! 🎉</p>
@@ -47,12 +15,4 @@
     <p>If you are an organizer, I recommend directly using the Forró app, but you can also head over to <a href="/add-festival">Add Festival</a>
         if you'd like to add a festival directly to this list.
     </p>
-    <hr>
-    <nav>
-        <a href="/">Festivals</a> |
-        <a href="/about">About</a> |
-        <a href="/impressum">Impressum</a> |
-        <a href="/add-festival">Add Festival</a>
-    </nav>
-</body>
-</html>
+{% endblock %}

@@ -3,31 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Your Website{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">  <!-- Link to CSS file -->
+    <title>Forró Festivals</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-
-    <header>
-        <h1>Welcome to My Flask App</h1>
-    </header>
-
-    <!-- Navigation bar -->
-    <nav>
-        <a href="/">Festivals</a> |
-        <a href="/about">About</a> |
-        <a href="/impressum">Impressum</a> |
-        <a href="/add-festival">Add Festival</a>
-    </nav>
 
     <!-- Main content section will be inserted here -->
     <div class="content">
         {% block content %}{% endblock %}
     </div>
 
-    <footer>
-        <p>&copy; 2025 My Flask App</p>
-    </footer>
+
+    <!-- Navigation bar -->
+    <hr>
+    <nav>
+        <a href="/">Festivals</a> |
+        <a href="/about">About</a> |
+        <a href="/impressum">Impressum</a> |
+        <a href="/add-festival">Add Festival</a>
+    </nav>
 
 </body>
 </html>

@@ -1,31 +1,6 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forró Festivals</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        p {
-            margin-bottom: 10px;
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
     <h1>Impressum</h1>
     <p>Angaben gemäß § 5 TMG:</p>
     <p>
@@ -41,12 +16,4 @@
         <strong>Haftungsausschluss:</strong><br>
         Die Inhalte dieser Webseite wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.
     </p>
-    <hr>
-    <nav>
-        <a href="/">Festivals</a> |
-        <a href="/about">About</a> |
-        <a href="/impressum">Impressum</a> |
-        <a href="/add-festival">Add Festival</a>
-    </nav>
-</body>
-</html>
+{% endblock %}
