@@ -10,6 +10,7 @@ saves the Event datastructure together with
 import sqlite3
 from contextlib import contextmanager
 from typing import List, Optional
+import re
 from datetime import datetime
 import shutil
 
@@ -47,6 +48,37 @@ def get_event_from_db_by_id(event_id: int):
 def update_event_by_id(event_id: int, event: Event):
     db = DataBase(db_path)
     db.update_event_by_id(event_id=event_id, event=event)
+
+def delete_event_by_id(event_id):
+    db = DataBase(db_path)
+    db.delete_event_by_id(event_id=event_id)
+
+
+def parse_range(s):
+    # Regular expression to match numbers and ranges (e.g., 11, 12, 13-15, 19)
+    result = []
+    for part in s.split(','):
+        if '-' in part:  # If there's a range
+            start, end = map(int, part.split('-'))
+            result.extend(range(start, end + 1))
+        else:  # If it's just a single number
+            result.append(int(part))
+    return result
+
+def delete_events_by_ids(event_ids: str):
+    """Deletes events conveniently by supplying a string like
+    event_ids = '1,3-5,10,19-29'
+    """
+    pattern = r"^(\d+)(-(\d+))?(,(\d+)(-(\d+))?)*$"
+    if not re.match(pattern, event_ids):
+        return False
+    else:
+        event_ids = parse_range(event_ids)
+        # TODO: its probably possible to do this as a batch operation
+        db = DataBase(db_path)
+        for event_id in event_ids:
+            db.delete_event_by_id(event_id=event_id)
+
 
 @contextmanager
 def db_ops(path):
