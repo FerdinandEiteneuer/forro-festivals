@@ -9,7 +9,7 @@ import flask_login
 
 from forro_festivals.scripts.create_impressum_html import create_impressum_html
 import forro_festivals.config as config
-from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id
+from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id, add_event_to_db
 from forro_festivals.scripts.event import Event
 
 
@@ -145,11 +145,17 @@ def form():
         try:
             app.logger.info(request.form)
             event = Event.from_request(request)
-            success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
-            return jsonify({'html_msg': success_msg}), 200
         except ValidationError as exc:
             err_msg = Event.human_readable_validation_error_explanation(exc)
             return jsonify({'error': err_msg}), 400
+
+        try:
+            add_event_to_db(event)
+            success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
+            return jsonify({'html_msg': success_msg}), 200
+        except Exception as e:
+            app.logger.error(f'Could not save {event=} into database')
+            return jsonify({'html_msg': 'Unknown Error'}), 500
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -183,17 +189,22 @@ def update_event():
     }
     event_id = event_data.pop('id')
 
-    event = get_event_from_db_by_id(event_id=event_id)
-    event.update(event_data=event_data)
+    try:
+        event = get_event_from_db_by_id(event_id=event_id)
+        event.update(event_data=event_data)
+        update_event_by_id(event_id=event_id, event=event)
+    except Exception as e:
+        app.logger.info(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')
 
-    update_event_by_id(event_id=event_id, event=event)
 
-    # TODO(fe) potential security issues if i supply the API token to this route.
-    #app.logger.info('reloading app...')
-    ## Trigger the "reload-bash" route programmatically using Flask's test_client()
-    #with current_app.test_client() as client:
-    #    client.get(url_for('reload_bash'))  # Trigger the reload-bash route
-    #app.logger.info('reloading app route executed')
+    app.logger.info('reloading app...')
+    # Trigger the "reload-bash" route programmatically using Flask's test_client()
+    with current_app.test_client() as client:
+        response = client.post(
+            url_for('reload_bash'),
+            headers={'Authorization': f'Token {config.API_TOKEN}'}
+        )  # Trigger the reload-bash route
+    app.logger.info(f'reloading app route executed, {response.status_code=}')
 
     return redirect(url_for('dashboard'))
 
