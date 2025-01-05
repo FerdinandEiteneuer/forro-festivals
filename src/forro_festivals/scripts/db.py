@@ -32,6 +32,10 @@ def update_db(events: List[Event]):
         db.insert_event(event)
     N_after = db.get_size()
 
+def add_event_to_db(event: Event):
+    db = DataBase(db_path)
+    db.insert_event(event)
+
 def get_events_from_db():
     db = DataBase(db_path)
     return db.get_all_events()
