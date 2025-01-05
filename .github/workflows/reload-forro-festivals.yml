@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: deploy forro-festivals.com
         run: |
-          curl -X POST --fail \
+          curl -v -X POST --fail \
                -H "Content-Type: application/json" \
                -H "Authorization: Token ${{ secrets.API_TOKEN }}" \
                www.forro-festivals.com/reload-bash
