@@ -47,6 +47,10 @@ def test_db():
 
         db.create()
         db.insert_event(event_0)
+
+        assert event_0 == db.get_event_by_id(event_id=1)
+        assert db.get_event_by_id(event_id=123) is None
+
         db.insert_event(event_0)  # duplicate which should not show up in db
         db.insert_event(event_1)
         db.insert_event(event_2)
@@ -59,6 +63,13 @@ def test_db():
         assert events[0] == event_0
         assert events[1] == event_1
         assert events[2] == event_2
+
+        event_0.city = 'Changed City'
+        db.update_event_by_id(event_id=1, event=event_0)
+
+        events = db.get_all_events()
+        assert events[0].id == 1
+        assert events[0].city == 'Changed City'
 
         db.delete_event_by_id(event_id=1)
         assert db.get_size() == 2

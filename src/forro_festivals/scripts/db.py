@@ -9,7 +9,7 @@ saves the Event datastructure together with
 
 import sqlite3
 from contextlib import contextmanager
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 import shutil
 
@@ -32,11 +32,17 @@ def update_db(events: List[Event]):
         db.insert_event(event)
     N_after = db.get_size()
 
-
 def get_events_from_db():
     db = DataBase(db_path)
     return db.get_all_events()
 
+def get_event_from_db_by_id(event_id: int):
+    db = DataBase(db_path)
+    return db.get_event_by_id(event_id=event_id)
+
+def update_event_by_id(event_id: int, event: Event):
+    db = DataBase(db_path)
+    db.update_event_by_id(event_id=event_id, event=event)
 
 @contextmanager
 def db_ops(path):
@@ -92,6 +98,14 @@ class DataBase:
             """, event.to_tuple()
             )
 
+    def update_event_by_id(self, event_id: int, event: Event):
+        with db_ops(self.path) as cursor:
+            cursor.execute("""
+                UPDATE events
+                SET date_start = ?, date_end = ?, city = ?, country = ?, organizer = ?, uuid = ?, link = ?, link_text = ?, validated = ?, source = ?, timestamp = ?
+                WHERE id = ?
+            """, event.to_tuple() + (event_id,))
+
     def delete_event_by_id(self, event_id: int):
         with db_ops(self.path) as cursor:
             cursor.execute("""
@@ -110,10 +124,19 @@ class DataBase:
 
         events = []
         for db_event in db_events:
-            event_ = dict(db_event)
-            _ = event_.pop('id')
-            events.append(Event(**event_))
+            events.append(Event(**dict(db_event)))
         return events
+
+    def get_event_by_id(self, event_id: int) -> Optional[Event]:
+        with db_ops(self.path) as cursor:
+            cursor.execute("SELECT * FROM events WHERE id = ?", (event_id,))
+            db_event = cursor.fetchone()  # Fetch only one result
+
+        # If the event was found, convert it to an Event object
+        if db_event:
+            return Event(**dict(db_event))
+        else:
+            return None  # Return None if the event was not found
 
     def get_size(self) -> int:
         return len(self.get_all_events())
