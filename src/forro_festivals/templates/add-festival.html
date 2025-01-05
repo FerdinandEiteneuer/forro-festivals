@@ -70,11 +70,8 @@
     </script>
 
     <style>
-        /* Basic reset and styling */
-
-
         form {
-            max-width: 360px;
+            max-width: 400px;
             background: #cacaca;
             padding: 12px;
             margin: 0 15px 20px;
@@ -82,14 +79,47 @@
             box-shadow: 0 4px 6px grey;
         }
 
-
         .form-container {
-            /*max-width: 840px;*/
-            /*margin: 0 auto;*/
             background-color: #fff;
             border-radius: 8px;
-            /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
         }
+        label {
+            white-space: nowrap; /* Prevent text wrapping */
+            display: inline-block; /* Ensures the label stays inline */
+        }
+
+        /* Table container should have a width of 100% to adjust accordingly */
+        table {
+            width: 100%;
+            table-layout: fixed; /* This ensures the table respects the set widths of columns */
+        }
+
+        /* Adjusting the first column (label column) */
+        table td:first-child {
+            width: 40%;
+        }
+
+        /* Adjusting the second column (input column) */
+        table td:nth-child(2) {
+            width: 60%;
+        }
+
+        /* Optional: Adjust input fields to take up full width of their respective columns */
+        input[type="text"], input[type="url"] {
+            width: 100%; /* Make input fields fill their columns */
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            table td:first-child {
+                width: 35%;
+            }
+
+            table td:nth-child(2) {
+                width: 65%;
+            }
+        }
+
 
         button {
             background-color: #cacaca;  /* Grey background */
@@ -99,6 +129,7 @@
             font-size: 16px;            /* Set the font size */
             transition: background-color 0.3s ease;  /* Smooth transition on hover */
             margin-left: 13px;  /* Move the button slightly to the right */
+            box-shadow: 0 4px 6px grey; /* Same shadow as the form */
         }
 
         button:hover {
