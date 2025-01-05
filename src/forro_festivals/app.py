@@ -18,7 +18,38 @@ def prepare():
 
 
 app = Flask(__name__)
+app.secret_key = os.environ['APP_SECRET_KEY']  # TODO make env var
 
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
+
+def load_json(path):
+    with open(path, 'r') as f:
+        return json.load(f)
+
+users = load_json(config.users_path)
+
+class User(flask_login.UserMixin):
+    pass
+
+@login_manager.user_loader
+def user_loader(email):
+    if email not in users:
+        return
+
+    user = User()
+    user.id = email
+    return user
+
+@login_manager.request_loader
+def request_loader(request):
+    email = request.form.get('email')
+    if email not in users:
+        return
+
+    user = User()
+    user.id = email
+    return user
 
 festivals_data = {
     "June 2024": [
@@ -104,8 +135,6 @@ def reload_bash():
         print(err_str)
         return err_str, 500
 
-
-
 @app.route('/add-festival', methods=['GET', 'POST'])
 def form():
     if request.method == 'GET':
@@ -120,6 +149,52 @@ def form():
         except ValidationError as exc:
             err_msg = Event.human_readable_validation_error_explanation(exc)
             return jsonify({'error': err_msg}), 400
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    email = request.form['email']
+    if email in users and request.form['password'] == users[email]['password']:
+        user = User()
+        user.id = email
+        flask_login.login_user(user)
+        return redirect(url_for('dashboard'))
+    return 'Unauthorized'
+
+
+@app.route('/dashboard')
+@flask_login.login_required
+def dashboard():
+    events = get_events_from_db()
+    event_list = [event.model_dump() for event in events]
+    return render_template('dashboard.html', events=event_list)
+
+@app.route('/update-event', methods=['POST'])
+@flask_login.login_required
+def update_event():
+    # Note: Currently the intended use of this function is to work properly
+    #       with the dashboard, which can update database entries.
+    app.logger.info(dict(request.form))
+    event_data = {
+        key.split('|')[0]: value
+        for key, value in dict(request.form).items()
+    }
+    event_id = event_data.pop('id')
+
+    event = get_event_from_db_by_id(event_id=event_id)
+    event.update(event_data=event_data)
+
+    update_event_by_id(event_id=event_id, event=event)
+
+    # TODO(fe) potential security issues if i supply the API token to this route.
+    #app.logger.info('reloading app...')
+    ## Trigger the "reload-bash" route programmatically using Flask's test_client()
+    #with current_app.test_client() as client:
+    #    client.get(url_for('reload_bash'))  # Trigger the reload-bash route
+    #app.logger.info('reloading app route executed')
+
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     prepare()

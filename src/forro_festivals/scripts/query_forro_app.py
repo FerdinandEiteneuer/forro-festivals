@@ -56,7 +56,7 @@ def parse_forro_app_query(query):
         try:
             event_dict = parse_forro_app_single_item(event_data)
             if event_dict:
-                event_dict['source'] = 'automatic'  # This script created that entry
+                event_dict['source'] = 'forro-app'  # This script created that entry
                 event = Event(**event_dict)
                 events.append(event)
         except Exception as e:

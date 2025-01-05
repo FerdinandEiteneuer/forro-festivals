@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Admin Login</h1>
+    <form method="POST" action="{{ url_for('login') }}" style="max-width: 300px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; text-align: left;">
+        <div style="margin-bottom: 10px;">
+            <label for="email" style="display: block;">Email:</label>
+            <input type="text" id="email" name="email" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <label for="password" style="display: block;">Password:</label>
+            <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <button type="submit" style="width: 100%; padding: 10px; border-radius: 4px; background-color: #4CAF50; color: white; border: none; font-size: 16px;">Login</button>
+    </form>
+{% endblock %}

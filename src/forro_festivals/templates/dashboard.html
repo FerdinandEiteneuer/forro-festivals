@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>
+        Admin Dashboard
+        <form action="/dashboard" method="GET">
+            <button type="submit" style="padding: 5px 15px; background-color: blue; color: white; border: none; border-radius: 4px;">Fetch Data from DB</button>
+        </form>
+    </h1>
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 0px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        /* Add padding to the header to move text slightly to the right */
+        th {
+            padding-left: 4px; /* Add some padding to the left */
+            padding-right: 10px; /* Optionally add padding on the right for symmetry */
+        }
+
+        button {
+            padding: 5px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .validated-yes {
+            background-color: #4CAF50; /* Green color for "Yes" */
+        }
+
+        .validated-no {
+            background-color: #f44336; /* Red color for "No" */
+        }
+
+        .update-button {
+            background-color: #2e796b;
+        }
+
+        /* Adjust input widths */
+        input[type="text"], input[type="date"], select {
+            width: 100%; /* Ensures inputs fill the entire width of the cell */
+            padding: 5px;
+            margin-top: 5px;
+            border-radius: 0; /* Remove border radius */
+            border: none; /* Remove borders */
+            box-sizing: border-box; /* Include padding and border in total width */
+            background-color: transparent; /* Ensure the background is transparent to blend with table */
+        }
+
+        /* Set specific widths for columns */
+        th:nth-child(1), td:nth-child(1) {
+            width: 20px; /* Set narrow width for the Id column */
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 280px; /* Set a reasonable width for the Name column */
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 120px; /* Set a reasonable width for the City column */
+        }
+
+        th:nth-child(4), td:nth-child(4), th:nth-child(5), td:nth-child(5) {
+            width: 95px; /* Set a reasonable width for the Date columns */
+        }
+
+        th:nth-child(6), td:nth-child(6) {
+            width: 200px; /* Set a reasonable width for the Link column */
+        }
+
+        th:nth-child(7), td:nth-child(7) {
+            width: 60px; /* Set a reasonable width for the Validated column */
+        }
+
+        th:nth-child(8), td:nth-child(8) {
+            width: 200px; /* Set a reasonable width for the Actions column */
+        }
+
+    </style>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>City</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Link</th>
+                <th>Validated</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <form action="/update-event" method="POST" style="display:inline;">
+                    <td>
+                        <input type="text" name="id|{{ event.id }}" value="{{ event.id }}" readonly>
+                    </td>
+                    <td>
+                        <input type="text" name="link_text|{{ event.id }}" value="{{ event.link_text }}">
+                    </td>
+                    <td>
+                        <input type="text" name="city|{{ event.id }}" value="{{ event.city }}">
+                    </td>
+                    <td>
+                        <input type="date" name="date_start|{{ event.id }}" value="{{ event.date_start }}">
+                    </td>
+                    <td>
+                        <input type="date" name="date_end|{{ event.id }}" value="{{ event.date_end }}">
+                    </td>
+                    <td>
+                        <input type="text" name="link|{{ event.id }}" value="{{ event.link }}">
+                    </td>
+                    <td>
+                        <!-- Hidden input to store the validated state. The form does not transmit buttons, so we store the value of the button here   -->
+                        <input type="hidden" name="validated|{{ event.id }}" id="validated_{{ event.id }}" value="{{ event.validated }}">
+
+                        <button type="button" class="validated-{{ 'yes' if event.validated else 'no' }}" onclick="toggleValidated({{ event.id }}, this)" name="validated_{{ event.id }}">
+                            {% if event.validated %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </button>
+                    </td>
+                    <td>
+                        <button type="submit" class="update-button">Update DB 💾</button>
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+    <script>
+        // This script is there so that you can click the Button and Yes and No swap
+        function toggleValidated(eventId, button) {
+            // Check if the button text is "Yes" or "No" and toggle
+            if (button.innerText === 'Yes') {
+                button.innerText = 'No'; // Change to "No"
+                button.style.backgroundColor = '#f44336'; // Red color for "No"
+                document.getElementById('validated_' + eventId).value = '0'; // Set hidden input to '0' (No)
+            } else {
+                button.innerText = 'Yes'; // Change to "Yes"
+                button.style.backgroundColor = '#4CAF50'; // Green color for "Yes"
+                document.getElementById('validated_' + eventId).value = '1'; // Set hidden input to '1' (Yes)
+            }
+
+            // Find the form related to this row (closest parent form element)
+            let form = button.closest('form');
+
+            // Create a hidden input to send the validation state
+            let input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'validated_' + eventId; // Use event ID for each row's unique field
+            input.value = button.innerText === 'Yes' ? '1' : '0'; // Send '1' for Yes, '0' for No
+
+            // Append the hidden input to the form to send with the request
+            form.appendChild(input);
+        }
+    </script>
+
+
+{% endblock %}
