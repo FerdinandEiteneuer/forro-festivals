@@ -133,7 +133,7 @@ def reload_bash():
         except Exception as e:
             err_str = f"Exception during reloading: {str(e)}"
 
-        print(err_str)
+        app.logger.error(err_str)
         return err_str, 500
 
 @app.route('/add-festival', methods=['GET', 'POST'])
