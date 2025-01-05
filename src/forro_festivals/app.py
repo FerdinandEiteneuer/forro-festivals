@@ -1,11 +1,15 @@
+import json
 import subprocess
 import os
 
 from pydantic import ValidationError
-from flask import Flask, render_template, request, send_from_directory, jsonify
+from flask import Flask, render_template, request, send_from_directory, jsonify, redirect, current_app, url_for
+
+import flask_login
 
 from forro_festivals.scripts.create_impressum_html import create_impressum_html
-from forro_festivals.config import API_TOKEN, root_path_repository, static_folder
+import forro_festivals.config as config
+from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id
 from forro_festivals.scripts.event import Event
 
 
@@ -61,7 +65,7 @@ festivals_data = {
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(static_folder, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(config.static_folder, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 def festivals():
@@ -71,22 +75,20 @@ def festivals():
 def about_page():
     return render_template('about.html')
 
-
 @app.route('/impressum')
 def impressum():
     return app.send_static_file('impressum.html')
 
-
 @app.route(f'/reload-bash', methods=['POST'])
 def reload_bash():
     api_token = request.args.get('api_token')
-    if api_token != API_TOKEN:
-        print(f"Unauthorized {api_token[:4]}!={API_TOKEN[:4]}")
+    if api_token != config.API_TOKEN:
+        print(f"Unauthorized {api_token[:4]}!={config.API_TOKEN[:4]}")
         return "Unauthorized", 403
 
     if request.method == 'POST':
         try:
-            os.chdir(root_path_repository)
+            os.chdir(config.root_path_repository)
 
             # Perform a git pull
             result = subprocess.run(['bash', 'src/forro_festivals/scripts/reload-all.sh'], capture_output=True, text=True, check=True)
