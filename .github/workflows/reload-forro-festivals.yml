@@ -13,4 +13,5 @@ jobs:
         run: |
           curl -X POST --fail \
                -H "Content-Type: application/json" \
-               www.forro-festivals.com/reload-bash?api_token=${{ secrets.API_TOKEN }}
+               -H "Authorization: Token ${{ secrets.API_TOKEN }}" \
+               www.forro-festivals.com/reload-bash
