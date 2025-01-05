@@ -18,12 +18,13 @@ def transform_date(date, fmt_from, fmt_to):
 
 class Event(BaseModel):
     # Note: potentially, I can add a date for the start of the ticket sell
+    id: int = -1  # coming from my database
     date_start: str
     date_end: str
     city: str
     country: str
     organizer: str
-    uuid: str = 'None'
+    uuid: str = 'None'  # coming from forro-app
     link: str
     link_text: str
     validated: bool = True
@@ -53,7 +54,23 @@ class Event(BaseModel):
         return event
 
     def to_tuple(self):
-        return tuple(self.model_dump().values())
+        model = self.model_dump()
+        model.pop('id')
+        return tuple(model.values())
+
+    def __eq__(self, other):
+        if not isinstance(other, Event):
+            return False  #
+        # Assume that no city ever has two festivals at the same weekend
+        return (self.date_start == other.date_start and
+                self.date_end == other.date_end and
+                self.city == other.city and
+                self.country == other.country
+        )
+
+    def update(self, event_data: dict):
+        for key, value in event_data.items():
+            setattr(self, key, value)
 
     def to_html_string(self):
         link = self.link
