@@ -1,8 +1,3 @@
 #!/bin/bash
-
-# USERNAME and API_TOKEN are automatically set in the pythonanywhere environment
-
-# Make the API call to reload the web app
-curl -X POST \
-    -H "Authorization: Token $API_TOKEN" \
-    https://www.pythonanywhere.com/api/v0/user/$USERNAME/webapps/www.forro-festivals.com/reload/
+# This reloads the app since pythonanywhere is checking for file changes to the wsgi file
+touch /var/www/www_forro-festivals_com_wsgi.py
