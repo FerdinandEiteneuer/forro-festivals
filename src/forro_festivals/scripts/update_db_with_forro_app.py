@@ -6,9 +6,7 @@ from forro_festivals.scripts.db import update_db, backup_db, init_db
 from forro_festivals.scripts.query_forro_app import get_forro_app_events
 
 def update_db_with_forro_app():
-    if db_path.exists():
-        backup_db()
-    else:
+    if not db_path.exists():
         init_db()
 
     fa_events = get_forro_app_events()
