@@ -4,7 +4,7 @@ import os
 # Env vars
 API_TOKEN = os.environ.get('API_TOKEN')
 USERNAME = os.environ.get('USERNAME')
-RELOAD_URL_PART = os.environ.get('RELOAD_URL_PART')
+APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
 # Paths - basic
 root_path_repository = Path(__file__).parent.parent.parent
