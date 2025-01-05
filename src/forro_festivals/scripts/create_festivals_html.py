@@ -12,6 +12,7 @@ from forro_festivals.scripts.db import get_events_from_db
 
 def create_festivals_html(template='festivals.html'):
     events = get_events_from_db()
+    events = [event for event in events if event.validated]
     festival_data = format_festival_data(events)
 
     app = Flask(__name__, root_path=root_path_flask)
