@@ -34,3 +34,6 @@ packages = ["forro_festivals"]
 
 [tool.setuptools.package-dir]
 "" = "src"
+
+[project.scripts]
+ff = "forro_festivals.scripts.__main__:ff"  # Define the entry point: 'ff' command maps to 'ff' function in ff.py
