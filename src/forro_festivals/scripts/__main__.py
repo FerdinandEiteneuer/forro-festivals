@@ -1,8 +1,14 @@
-import os
-import subprocess
+"""
+This module creates a cli application for common tasks like
+* manipulating the database
+* rendering html pages
+* reloading the app
+* querying the forro-app
+"""
 
 import click
 
+from forro_festivals.scripts.cli_utils import validate_event_ids
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.create_impressum_html import create_impressum_html
 from forro_festivals.scripts.render_html_pages import render_html_pages
@@ -15,7 +21,6 @@ from forro_festivals.scripts.update_db_with_forro_app import update_db_with_forr
 def ff():
     """Main entry point for Forro-Festivals."""
     pass
-
 
 @ff.command()
 def reload_app():
@@ -36,14 +41,12 @@ def db():
     """Database related commands."""
     pass
 
-# Command: db delete
 @db.command()
-@click.option('--ids', required=True, type=str, help='ID(s) of the record to delete. Example: "1,5,10-19,30"')
+@click.option('--ids', required=True, type=str, callback=validate_event_ids, help='ID(s) of the record to delete. Example: "1,5,10-19,30"')
 def delete(ids):
     """Delete record(s) from the database."""
     delete_events_by_ids(ids)
 
-# Command: db backup
 @db.command()
 def backup():
     """Create a backup of the database."""
@@ -52,7 +55,6 @@ def backup():
 ########
 # HTML #
 ########
-# Command: render html pages
 @click.group()
 def html():
     """Render HTML pages."""
