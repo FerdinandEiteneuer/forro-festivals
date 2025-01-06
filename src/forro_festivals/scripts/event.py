@@ -35,7 +35,7 @@ class Event(BaseModel):
         # Prevent modification of fields after instantiation.
         # Note: The way I use the database is to read from it and return Event objects.
         #       Therefore, they should better not be corrupted at any stage in my handling of them.
-        allow_mutation = False
+        frozen = True
 
     @property
     def start(self):
