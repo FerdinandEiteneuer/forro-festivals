@@ -8,9 +8,7 @@ users.json
 *.db
 
 # static pages
-src/forro_festivals/static/*
-!src/forro_festivals/static/favicons/
-!src/forro_festivals/static/styles.css
+src/forro_festivals/static/*.html
 
 # Byte-compiled files
 __pycache__/
