@@ -69,8 +69,12 @@ class Event(BaseModel):
         )
 
     def update(self, event_data: dict):
-        for key, value in event_data.items():
-            setattr(self, key, value)
+        self.date_end = event_data.get('date_end', self.date_end)
+        self.date_start = event_data.get('date_start', self.date_start)
+        self.city = event_data.get('city', self.city)
+        self.link = event_data.get('link', self.link)
+        self.link_text = event_data.get('link_text', self.link_text)
+        self.validated = bool(event_data.get('validated', self.validated))
 
     def to_html_string(self):
         link = self.link
