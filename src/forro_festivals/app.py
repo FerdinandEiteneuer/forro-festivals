@@ -96,7 +96,11 @@ festivals_data = {
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(config.static_folder / 'favicons', 'favicon-32x32.png', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(
+        config.static_folder / 'favicons',
+        'favicon-32x32.png',
+        mimetype='image/vnd.microsoft.icon'
+    )
 
 @app.route('/')
 def festivals():
@@ -182,6 +186,7 @@ def dashboard():
 def update_event():
     # Note: Currently the intended use of this function is to work properly
     #       with the dashboard, which can update database entries.
+    app.logger.info(f'user {flask_login.current_user.id} updated an event')
     app.logger.info(dict(request.form))
     event_data = {
         key.split('|')[0]: value
