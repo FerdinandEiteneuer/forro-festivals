@@ -31,6 +31,12 @@ class Event(BaseModel):
     source: str
     timestamp: str = Field(default_factory=get_timestamp)  # refers to object creation timestamp
 
+    class Config:
+        # Prevent modification of fields after instantiation.
+        # Note: The way I use the database is to read from it and return Event objects.
+        #       Therefore, they should better not be corrupted at any stage in my handling of them.
+        allow_mutation = False
+
     @property
     def start(self):
         return datetime.strptime(self.date_start, DateFormats.ymd)
@@ -68,13 +74,17 @@ class Event(BaseModel):
                 self.country == other.country
         )
 
-    def update(self, event_data: dict):
-        self.date_end = event_data.get('date_end', self.date_end)
-        self.date_start = event_data.get('date_start', self.date_start)
-        self.city = event_data.get('city', self.city)
-        self.link = event_data.get('link', self.link)
-        self.link_text = event_data.get('link_text', self.link_text)
-        self.validated = bool(event_data.get('validated', self.validated))
+    @classmethod
+    def merge(cls, event: 'Event', partial_data: dict):
+        # Important: Because the 'get_all_events' function from db.py immediately creates Event objects and returns them
+        #            I write this function to ensure that if I want to update an event with the form data from the dashboard
+        #            this essentially tests if the Event I want to put into the db is still working.
+        #            History: I manually edited an event in the db to have date_end before date_start, saved this to db
+        #            and then the dashboard was not usable anymore.
+        event_data = event.model_dump()
+        merged_data = {**event_data, **partial_data}  # Note: partial_data will overwrite event_data
+        return cls(**merged_data)  # If merged data is inconsisted, we will raise here automatically and wont be able to use this
+
 
     def to_html_string(self):
         link = self.link

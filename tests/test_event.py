@@ -29,6 +29,8 @@ def test_valid_event():
     assert e.start == datetime(year=2024, month=10, day=2)
     assert e.end == datetime(year=2024, month=10, day=6)
 
+    recreated_event = Event(**e.model_dump())
+    assert recreated_event.model_dump() == e.model_dump()
 
 @pytest.mark.parametrize(
     'event',

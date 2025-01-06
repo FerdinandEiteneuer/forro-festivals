@@ -10,7 +10,7 @@ saves the Event datastructure together with
 import sqlite3
 from contextlib import contextmanager
 from typing import List, Optional
-import re
+import logging
 from datetime import datetime
 import shutil
 
@@ -101,6 +101,12 @@ class DataBase:
             """
             )
     def insert_event(self, event: Event):
+        try:
+            Event(**event.model_dump())
+        except Exception as e:
+            logging.error(f'Trying to insert inconsistent {event=} into the database')
+            raise
+
         with db_ops(self.path) as cursor:
             cursor.execute("""
                 INSERT OR IGNORE INTO events (date_start, date_end, city, country, organizer, uuid, link, link_text, validated, source, timestamp)

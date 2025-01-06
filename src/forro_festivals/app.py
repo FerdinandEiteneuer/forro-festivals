@@ -149,11 +149,11 @@ def update_event():
 
     try:
         event = get_event_from_db_by_id(event_id=event_id)
-        event.update(event_data=event_data)
+        event = Event.merge(event=event, partial_data=event_data)
         update_event_by_id(event_id=event_id, event=event)
     except Exception as e:
         app.logger.info(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')
-
+        return redirect(url_for('dashboard'))
 
     app.logger.info('reloading app...')
     # Trigger the "reload-bash" route programmatically using Flask's test_client()
