@@ -14,21 +14,20 @@
         {% block content %}{% endblock %}
     </div>
 
+    <!-- General Favicon for most browsers low res-->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}" sizes="16x16">
 
     <!-- General Favicon for most browsers -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}" sizes="32x32">
 
-    <!-- Favicon for higher resolution displays (retina) -->
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/favicon-48x48.png') }}" sizes="48x48">
-
     <!-- Android home screen icon -->
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/favicon-192x192.png') }}" sizes="192x192">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/android-chrome-192x192.png') }}" sizes="192x192">
+
+    <!-- Android home screen icon high resolution-->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/android-chrome-512x512.png') }}" sizes="512x512">
 
     <!-- iOS home screen icon (Apple Touch Icon) -->
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}">
-
-    <!-- High resolution iOS icon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicons/apple-touch-icon-180x180.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}" sizes="180x180">
 
     <!-- Link to the web manifest -->
     <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
