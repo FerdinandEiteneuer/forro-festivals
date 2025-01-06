@@ -51,7 +51,8 @@ def test_db():
         assert event_0 == db.get_event_by_id(event_id=1)
         assert db.get_event_by_id(event_id=123) is None
 
-        db.insert_event(event_0)  # duplicate which should not show up in db
+        db.insert_event(event_0)  # duplicate which should not show up in db.
+        # Note: the sqlite3 db did increase its id counter though!
         db.insert_event(event_1)
         db.insert_event(event_2)
 
@@ -59,7 +60,6 @@ def test_db():
         events = db.get_all_events()
 
         assert len(events) == db.get_size() == 3
-
         assert events[0] == event_0
         assert events[1] == event_1
         assert events[2] == event_2
@@ -71,5 +71,11 @@ def test_db():
         assert events[0].id == 1
         assert events[0].city == 'Changed City'
 
-        db.delete_event_by_id(event_id=1)
+        db.delete_events_by_id(event_ids=[1])
         assert db.get_size() == 2
+
+        db.delete_events_by_id(event_ids=[3, 4])
+        assert db.get_size() == 0
+
+        db.delete_events_by_id(event_ids=[1234, 4321])
+        assert db.get_size() == 0

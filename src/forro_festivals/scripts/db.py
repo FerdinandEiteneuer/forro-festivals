@@ -49,36 +49,12 @@ def update_event_by_id(event_id: int, event: Event):
     db = DataBase(db_path)
     db.update_event_by_id(event_id=event_id, event=event)
 
-def delete_event_by_id(event_id):
-    db = DataBase(db_path)
-    db.delete_event_by_id(event_id=event_id)
-
-
-def parse_range(s):
-    # Regular expression to match numbers and ranges (e.g., 11, 12, 13-15, 19)
-    result = []
-    for part in s.split(','):
-        if '-' in part:  # If there's a range
-            start, end = map(int, part.split('-'))
-            result.extend(range(start, end + 1))
-        else:  # If it's just a single number
-            result.append(int(part))
-    return result
-
-def delete_events_by_ids(event_ids: str):
+def delete_events_by_ids(event_ids: List[int] | int):
     """Deletes events conveniently by supplying a string like
     event_ids = '1,3-5,10,19-29'
     """
-    pattern = r"^(\d+)(-(\d+))?(,(\d+)(-(\d+))?)*$"
-    if not re.match(pattern, event_ids):
-        return False
-    else:
-        event_ids = parse_range(event_ids)
-        # TODO: its probably possible to do this as a batch operation
-        db = DataBase(db_path)
-        for event_id in event_ids:
-            db.delete_event_by_id(event_id=event_id)
-
+    db = DataBase(db_path)
+    db.delete_events_by_ids(event_ids=event_ids)
 
 @contextmanager
 def db_ops(path):
@@ -142,16 +118,20 @@ class DataBase:
                 WHERE id = ?
             """, event.to_tuple() + (event_id,))
 
-    def delete_event_by_id(self, event_id: int):
+    def delete_events_by_ids(self, event_ids: List[int] | int):
+        if isinstance(event_ids, int):
+            event_ids = [event_ids]
+        placeholders = ', '.join(len(event_ids) * ['?'])
         with db_ops(self.path) as cursor:
-            cursor.execute("""
+            sql_statement = f"""
                 DELETE FROM events
-                WHERE id = ?
-            """, (event_id,))
+                WHERE id in ({placeholders})
+            """
+            cursor.execute(sql_statement, tuple(event_ids))
             if cursor.rowcount == 0:
-                print("No row found with the given id.")
+                print("No row found with the given id(s).")
             else:
-                print(f"Deleted {cursor.rowcount} row(s).")
+                print(f"Deleted {cursor.rowcount} row(s). (Received {len(event_ids)} rows to be deleted)")
 
     def get_all_events(self) -> List[dict]:
         with db_ops(self.path) as cursor:
