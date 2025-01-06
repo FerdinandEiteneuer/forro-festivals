@@ -28,10 +28,8 @@ def backup_db():
 
 def update_db(events: List[Event]):
     db = DataBase(db_path)
-    N_before = db.get_size()
     for event in events:
         db.insert_event(event)
-    N_after = db.get_size()
 
 def add_event_to_db(event: Event):
     db = DataBase(db_path)
