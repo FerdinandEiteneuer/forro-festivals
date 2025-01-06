@@ -24,7 +24,7 @@ def init_db():
 def backup_db():
     db_backup_folder.mkdir(exist_ok=True)
     timestamp = datetime.today().strftime('%y-%m-%d--%H-%M-%S')
-    shutil.copy(db_path, db_backup_folder / f'festivals-{timestamp}')
+    shutil.copy(db_path, db_backup_folder / f'festivals-{timestamp}.db')
 
 def update_db(events: List[Event]):
     db = DataBase(db_path)
