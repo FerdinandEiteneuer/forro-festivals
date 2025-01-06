@@ -16,6 +16,13 @@ def create_festivals_html(template='festivals.html'):
     festival_data = format_festival_data(events)
 
     app = Flask(__name__, root_path=root_path_flask)
+
+    # The below 3 lines are needed since I added url_for into the base.html
+    app.config['SERVER_NAME'] = 'localhost:5000'
+    app.config['APPLICATION_ROOT'] = '/'
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
+
+
     with app.app_context():
         festivals = render_template(template, data=festival_data)
 
