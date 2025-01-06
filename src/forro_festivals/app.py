@@ -51,49 +51,6 @@ def request_loader(request):
     user.id = email
     return user
 
-festivals_data = {
-    "June 2024": [
-        {
-            "location": "Porto, Portugal",
-            "date_start": "01.06",
-            "date_end": "02.06",
-            "link": "https://example.com/festival-internacional-de-forro",
-            "link_text": "Festival Internacional de Forró"
-        },
-        {
-            "location": "Berlin, Germany",
-            "date_start": "07.06",
-            "date_end": "09.06",
-            "link": "https://example.com/berlin-tome-forro",
-            "link_text": "Berlin – Tome Forró"
-        },
-        {
-            "location": "Karlsruhe, Germany",
-            "date_start": "07.06",
-            "date_end": "09.06",
-            "link": "https://example.com/forro-de-ka",
-            "link_text": "Forró de KA Festival"
-        }
-    ],
-    "July 2024": [
-        {
-            "location": "Stockholm, Sweden",
-            "date_start": "05.07",
-            "date_end": "07.07",
-            "link": "https://example.com/alegria-do-norte",
-            "link_text": "Alegria do Norte"
-        },
-        {
-            "location": "Leisnig, Germany",
-            "date_start": "12.07",
-            "date_end": "14.07",
-            "link": "https://example.com/forro-experience",
-            "link_text": "Forró Experience"
-        }
-    ]
-}
-
-
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
