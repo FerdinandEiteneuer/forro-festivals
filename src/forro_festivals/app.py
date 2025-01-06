@@ -96,7 +96,7 @@ festivals_data = {
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(config.static_folder, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(config.static_folder / 'favicons', 'favicon-32x32.png', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 def festivals():
