@@ -18,7 +18,7 @@ def prepare():
 
 
 app = Flask(__name__)
-app.secret_key = os.environ['APP_SECRET_KEY']  # TODO make env var
+app.secret_key = os.environ['APP_SECRET_KEY']
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
