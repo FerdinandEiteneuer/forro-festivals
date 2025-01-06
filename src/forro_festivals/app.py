@@ -55,8 +55,8 @@ def request_loader(request):
 def favicon():
     return send_from_directory(
         config.static_folder / 'favicons',
-        'favicon-32x32.png',
-        mimetype='image/png'
+        'favicon.ico',
+        mimetype='image/vnd.microsoft.icon'
     )
 
 @app.route('/')

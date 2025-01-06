@@ -14,11 +14,14 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- General Favicon for most browsers low res-->
+    <!-- General Favicon for most browsers low-res -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}" sizes="16x16">
 
     <!-- General Favicon for most browsers -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}" sizes="32x32">
+
+    <!-- General Favicon for most browsers high-res -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/favicon-192x192.png') }}" sizes="192x192">
 
     <!-- Android home screen icon -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicons/android-chrome-192x192.png') }}" sizes="192x192">
