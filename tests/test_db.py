@@ -71,11 +71,11 @@ def test_db():
         assert events[0].id == 1
         assert events[0].city == 'Changed City'
 
-        db.delete_events_by_id(event_ids=[1])
+        db.delete_events_by_ids(event_ids=[1])
         assert db.get_size() == 2
 
-        db.delete_events_by_id(event_ids=[3, 4])
+        db.delete_events_by_ids(event_ids=[3, 4])
         assert db.get_size() == 0
 
-        db.delete_events_by_id(event_ids=[1234, 4321])
+        db.delete_events_by_ids(event_ids=[1234, 4321])
         assert db.get_size() == 0
