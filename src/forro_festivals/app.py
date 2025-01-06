@@ -13,10 +13,6 @@ from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_
 from forro_festivals.scripts.event import Event
 
 
-def prepare():
-    create_impressum_html()
-
-
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET_KEY']
 
@@ -171,5 +167,4 @@ def update_event():
     return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
-    prepare()
     app.run(debug=True)
