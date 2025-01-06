@@ -16,7 +16,7 @@ def create_impressum_html(template='impressum.html'):
     # The below 3 lines are needed since I added url_for into the base.html
     app.config['SERVER_NAME'] = 'localhost:5000'
     app.config['APPLICATION_ROOT'] = '/'
-    app.config['PREFERRED_URL_SCHEME'] = 'https'
+    app.config['PREFERRED_URL_SCHEME'] = 'http'
 
     with app.app_context():
         impressum = render_template(template, data=private_data)
