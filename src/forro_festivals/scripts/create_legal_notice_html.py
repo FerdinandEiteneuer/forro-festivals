@@ -8,7 +8,7 @@ def load_private_data(path):
     with open(path, 'r') as f:
         return json.load(f)
 
-def create_impressum_html(template='impressum.html'):
+def create_legal_notice_html(template='legal-notice.html'):
     private_data = load_private_data(private_json)
 
     app = Flask(__name__, root_path=root_path_flask)
@@ -19,12 +19,12 @@ def create_impressum_html(template='impressum.html'):
     app.config['PREFERRED_URL_SCHEME'] = 'http'
 
     with app.app_context():
-        impressum = render_template(template, data=private_data)
+        legal_notice = render_template(template, data=private_data)
 
     static_folder.mkdir(exist_ok=True)
     with open(f'{static_folder}/{template}', 'w') as file:
-        file.write(impressum)
+        file.write(legal_notice)
 
 
 if __name__ == '__main__':
-    create_impressum_html()
+    create_legal_notice_html()

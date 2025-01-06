@@ -4,10 +4,8 @@ import os
 
 from pydantic import ValidationError
 from flask import Flask, render_template, request, send_from_directory, jsonify, redirect, current_app, url_for
-
 import flask_login
 
-from forro_festivals.scripts.create_impressum_html import create_impressum_html
 import forro_festivals.config as config
 from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id, add_event_to_db
 from forro_festivals.scripts.event import Event
@@ -63,9 +61,9 @@ def festivals():
 def about_page():
     return render_template('about.html')
 
-@app.route('/impressum')
-def impressum():
-    return app.send_static_file('impressum.html')
+@app.route('/legal-notice')
+def legal_notice():
+    return app.send_static_file('legal-notice.html')
 
 @app.route(f'/reload-bash', methods=['POST'])
 def reload_bash():
