@@ -5,6 +5,7 @@ import os
 API_TOKEN = os.environ.get('API_TOKEN')
 USERNAME = os.environ.get('USERNAME')
 APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
+NTFY_TOPIC = os.environ.get('NTFY_TOPIC')
 
 # Paths - basic
 root_path_repository = Path(__file__).parent.parent.parent
