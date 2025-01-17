@@ -16,6 +16,7 @@ app.secret_key = os.environ['APP_SECRET_KEY']
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 def load_json(path):
     with open(path, 'r') as f:
