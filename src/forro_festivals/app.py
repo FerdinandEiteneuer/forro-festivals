@@ -125,6 +125,10 @@ def login():
         return redirect(url_for('dashboard'))
     return 'Unauthorized'
 
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return redirect(url_for('festivals'))
 
 @app.route('/dashboard')
 @flask_login.login_required
