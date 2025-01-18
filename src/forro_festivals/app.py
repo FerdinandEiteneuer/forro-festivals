@@ -64,11 +64,6 @@ def festivals():
 
 @app.route('/about')
 def about_page():
-    logger.debug("This is a debug message.")
-    logger.info("This is an info message.")
-    logger.warning("This is a warning message.")
-    logger.error("This is an error message.")
-    logger.critical("This is a critical message.")
     return render_template('about.html')
 
 @app.route('/legal-notice')
@@ -80,7 +75,7 @@ def reload_bash():
 
     api_token = request.authorization.token
     if api_token != config.API_TOKEN:
-        app.logger.warning(f'bad api token supplied')
+        logger.warning(f'bad api token supplied')
         return "Unauthorized", 403
 
     if request.method == 'POST':
@@ -98,7 +93,7 @@ def reload_bash():
         except Exception as e:
             err_str = f"Exception during reloading: {str(e)}"
 
-        app.logger.error(err_str)
+        logger.error(err_str)
         return err_str, 500
 
 @app.route('/add-festival', methods=['GET', 'POST'])
@@ -106,9 +101,8 @@ def form():
     if request.method == 'GET':
         return render_template("add-festival.html", data={}), 200
     elif request.method == "POST":
-        app.logger.info(f'button press?')
         try:
-            app.logger.info(request.form)
+            logger.info(request.form)
             event = Event.from_request(request)
         except ValidationError as exc:
             err_msg = Event.human_readable_validation_error_explanation(exc)
@@ -119,7 +113,7 @@ def form():
             success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
             return jsonify({'html_msg': success_msg}), 200
         except Exception as e:
-            app.logger.error(f'Could not save {event=} into database')
+            logger.error(f'Could not save {event=} into database')
             return jsonify({'html_msg': 'Unknown Error'}), 500
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -131,6 +125,7 @@ def login():
         user = User()
         user.id = email
         flask_login.login_user(user)
+        logger.info(f'User {email} just logged in')
         return redirect(url_for('dashboard'))
     return 'Unauthorized'
 
@@ -151,7 +146,7 @@ def dashboard():
 def update_event():
     # Note: Currently the intended use of this function is to work properly
     #       with the dashboard, which can update database entries.
-    app.logger.info(f'user {flask_login.current_user.id} is updating an event')
+    logger.info(f'user {flask_login.current_user.id} is updating an event')
 
     event_data = request.get_json()
     event_id = event_data.pop('id')
@@ -161,17 +156,17 @@ def update_event():
         event = Event.merge(event=event, partial_data=event_data)
         update_event_by_id(event_id=event_id, event=event)
     except Exception as e:
-        app.logger.info(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')
+        logger.warning(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')
         return redirect(url_for('dashboard'))
 
-    app.logger.info('reloading app...')
+    logger.info('reloading app...')
     # Trigger the "reload-bash" route programmatically using Flask's test_client()
     with current_app.test_client() as client:
         response = client.post(
             url_for('reload_bash'),
             headers={'Authorization': f'Token {config.API_TOKEN}'}
         )  # Trigger the reload-bash route
-    app.logger.info(f'reloading app route executed, {response.status_code=}')
+    logger.info(f'reloading app route executed, {response.status_code=}')
 
     ntfy_response = post_event_to_ntfy_channel(event)
     app.logger.info(ntfy_response.text)
@@ -183,13 +178,13 @@ def update_event():
 def dashboard_update_event():
     # Note: Currently the intended use of this function is to work properly
     #       with the dashboard, which can update database entries.
-    app.logger.info(f'dashboard-update-event {flask_login.current_user.id} updated an event')
+    logger.info(f'{flask_login.current_user.id} updated an event')
 
     event_data = {
         key.split('|')[0]: value
         for key, value in dict(request.form).items()
     }
-    app.logger.info(f'dashboard-update-event: {dict(request.form)}, sending {event_data}')
+    logger.info(f'received {dict(request.form)}, sending {event_data}')
 
     with current_app.test_client() as client:
         client.post(
@@ -197,7 +192,6 @@ def dashboard_update_event():
             json=event_data
         )
     return redirect(url_for('dashboard'))
-
 
 
 if __name__ == '__main__':
