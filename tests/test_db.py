@@ -64,7 +64,8 @@ def test_db():
         assert events[1] == event_1
         assert events[2] == event_2
 
-        event_0.city = 'Changed City'
+        partial_data = {'city': 'Changed City'}
+        event_0 = Event.merge(event=event_0, partial_data=partial_data)
         db.update_event_by_id(event_id=1, event=event_0)
 
         events = db.get_all_events()
