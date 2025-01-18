@@ -28,7 +28,7 @@ def post_event_to_ntfy_channel(event: Event):
     #    "body": f'"id": "{event.id}", "validated": "true"'
     #}
     accept_festival = {
-        "action": "http",
+        "action": "view",
         "label": "Accept Event",
         "url": f"https://www.forro-festivals.com/update-event?id={event.id}&validated=true",
     }
