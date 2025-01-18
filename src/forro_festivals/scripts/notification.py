@@ -6,7 +6,6 @@ for an event which was manually added by a user.
 import requests
 import json
 
-from forro_festivals.config import NTFY_TOPIC
 from forro_festivals.scripts.event import Event
 
 def event_to_message(event: Event):
@@ -15,7 +14,7 @@ def event_to_message(event: Event):
            f'Date: {event.date_start} - {event.date_end}\n' \
            f'Link: {event.link}'
 
-def post_event_to_ntfy_channel(event: Event, event_id: int):
+def post_event_to_ntfy_channel(event: Event, event_id: int, topic: str):
     view_link = {
         "action": "view",
         "label": "View Link",
@@ -29,7 +28,7 @@ def post_event_to_ntfy_channel(event: Event, event_id: int):
 
     return requests.post("https://ntfy.sh/",
         data=json.dumps({
-            "topic": NTFY_TOPIC,
+            "topic": topic,
             "title": "New Festival :-)",
             "message": event_to_message(event),
             "tags": ["tada"],
@@ -39,6 +38,16 @@ def post_event_to_ntfy_channel(event: Event, event_id: int):
             ]
         })
     )
+
+
+def post_error_to_ntfy_channel(message, topic):
+    return requests.post("https://ntfy.sh/",
+        data=json.dumps({
+            "topic": topic,
+            "title": "Error",
+            "message": message,
+            "tags": ["rotating_light"],
+        }))
 
 
 if __name__ == '__main__':
@@ -54,7 +63,6 @@ if __name__ == '__main__':
         source='tester',
     )
 
-    req = post_event_to_ntfy_channel(event=event)
-
-    print(req.status_code)
-    print(req.text)
+    #req = post_event_to_ntfy_channel(event=event)
+    #print(req.status_code)
+    #print(req.text)
