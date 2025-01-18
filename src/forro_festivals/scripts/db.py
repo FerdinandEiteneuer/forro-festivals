@@ -28,12 +28,15 @@ def backup_db():
 
 def update_db(events: List[Event]):
     db = DataBase(db_path)
+    event_ids = []
     for event in events:
-        db.insert_event(event)
+        event_id = db.insert_event(event)
+        event_ids.append(event_id)
+    return event_ids
 
 def add_event_to_db(event: Event):
     db = DataBase(db_path)
-    db.insert_event(event)
+    return db.insert_event(event)
 
 def get_events_from_db():
     db = DataBase(db_path)
@@ -113,6 +116,8 @@ class DataBase:
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, event.to_tuple()
             )
+            # In case of duplicate, this returns 0. In case a valid entry is submitted, returns the id
+            return cursor.lastrowid
 
     def update_event_by_id(self, event_id: int, event: Event):
         with db_ops(self.path) as cursor:
