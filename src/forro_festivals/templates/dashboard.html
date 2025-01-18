@@ -112,7 +112,7 @@
         <tbody>
             {% for event in events %}
             <tr>
-                <form action="/update-event" method="POST" style="display:inline;">
+                <form action="/dashboard-update-event" method="POST" style="display:inline;">
                     <td>
                         <input type="text" name="id|{{ event.id }}" value="{{ event.id }}" readonly>
                     </td>

@@ -10,7 +10,6 @@ import forro_festivals.config as config
 from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id, add_event_to_db
 from forro_festivals.scripts.event import Event
 
-
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET_KEY']
 
@@ -142,12 +141,9 @@ def dashboard():
 def update_event():
     # Note: Currently the intended use of this function is to work properly
     #       with the dashboard, which can update database entries.
-    app.logger.info(f'user {flask_login.current_user.id} updated an event')
-    app.logger.info(dict(request.form))
-    event_data = {
-        key.split('|')[0]: value
-        for key, value in dict(request.form).items()
-    }
+    app.logger.info(f'user {flask_login.current_user.id} is updating an event')
+
+    event_data = request.get_json()
     event_id = event_data.pop('id')
 
     try:
@@ -168,6 +164,28 @@ def update_event():
     app.logger.info(f'reloading app route executed, {response.status_code=}')
 
     return redirect(url_for('dashboard'))
+
+@app.route('/dashboard-update-event', methods=['POST'])
+@flask_login.login_required
+def dashboard_update_event():
+    # Note: Currently the intended use of this function is to work properly
+    #       with the dashboard, which can update database entries.
+    app.logger.info(f'dashboard-update-event {flask_login.current_user.id} updated an event')
+
+    event_data = {
+        key.split('|')[0]: value
+        for key, value in dict(request.form).items()
+    }
+    app.logger.info(f'dashboard-update-event: {dict(request.form)}, sending {event_data}')
+
+    with current_app.test_client() as client:
+        client.post(
+            url_for('update_event'),
+            json=event_data
+        )
+    return redirect(url_for('dashboard'))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
