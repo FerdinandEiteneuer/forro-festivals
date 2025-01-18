@@ -154,26 +154,29 @@ def dashboard():
     event_list = [event.model_dump() for event in events]
     return render_template('dashboard.html', events=event_list)
 
-@app.route('/update-event', methods=['POST'])
+@app.route('/update-event', methods=['GET', 'POST'])
 @flask_login.login_required
 def update_event():
     # Note: Currently the intended use of this function is to work properly
     #       with the dashboard, which can update database entries.
     logger.info(f'user {flask_login.current_user.id} is updating an event')
 
-    event_data = request.get_json()
+    if request.method == 'POST':
+        event_data = request.get_json()
+    elif request.method == 'GET':
+        logger.info(f'GET: {dict(request.args)=}')
+        event_data = dict(request.args)
+
     event_id = event_data.pop('id')
 
     try:
         event = get_event_from_db_by_id(event_id=event_id)
         event = Event.merge(event=event, partial_data=event_data)
         update_event_by_id(event_id=event_id, event=event)
+        logger.info('recreating festivals.html ...')
+        create_festivals_html()
     except Exception as e:
-        logger.warning(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')
-        return redirect(url_for('dashboard'))
-
-    logger.info('recreating festivals.html ...')
-    create_festivals_html()
+        logger.error(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')
 
     return redirect(url_for('dashboard'))
 
