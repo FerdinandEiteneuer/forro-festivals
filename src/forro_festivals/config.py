@@ -49,12 +49,12 @@ def get_logger():
 
     if LOG_CONSOLE:
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)  # Set console logging level to DEBUG
+        console_handler.setLevel(logging.DEBUG)
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
 
     file_handler = RotatingFileHandler(filename=LOG_FOLDER / 'app.log', maxBytes=1e6, backupCount=5)
-    file_handler.setLevel(logging.INFO)  # Set file logging level to INFO
+    file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
