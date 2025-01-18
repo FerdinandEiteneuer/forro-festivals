@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, send_from_directory, jsonify,
 import flask_login
 
 import forro_festivals.config as config
-from forro_festivals.config import get_logger
+from forro_festivals.scripts.logger import get_logger
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id, add_event_to_db
 from forro_festivals.scripts.event import Event
@@ -115,7 +115,7 @@ def form():
             return jsonify({'error': 'Could not save into database'}), 500
 
         if new_id != 0:
-            ntfy_response = post_event_to_ntfy_channel(event, event_id=new_id)
+            ntfy_response = post_event_to_ntfy_channel(event, event_id=new_id, topic=config.NTFY_TOPIC)
             if ntfy_response.status_code > 200:
                 logger.warning(f'{ntfy_response.status_code=}, {ntfy_response.text=}')
 
