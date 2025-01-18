@@ -117,7 +117,9 @@ def form():
                 pass
             success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
 
-            event.id = new_id
+            # Event is frozen datastructure, so make new object
+            event = Event.merge(event=event, partial_data={'id': new_id})
+
             ntfy_response = post_event_to_ntfy_channel(event)
             logger.info(f'{ntfy_response.status_code=}, {ntfy_response.text=}')
 
