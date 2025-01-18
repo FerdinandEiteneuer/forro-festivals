@@ -4,7 +4,7 @@ import os
 import logging
 
 from pydantic import ValidationError
-from flask import Flask, render_template, request, send_from_directory, jsonify, redirect, current_app, url_for
+from flask import Flask, render_template, request, send_from_directory, jsonify, redirect, current_app, url_for, session
 import flask_login
 
 import forro_festivals.config as config
@@ -73,11 +73,10 @@ def legal_notice():
 
 @app.route(f'/reload-bash', methods=['POST'])
 def reload_bash():
-
     api_token = request.authorization.token
     if api_token != config.API_TOKEN:
         logger.warning(f'bad api token supplied')
-        return "Unauthorized", 403
+        return 'Unauthorized', 403
 
     if request.method == 'POST':
         try:
@@ -123,19 +122,28 @@ def form():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    logger.info(f'called login with {request.args.get("next")=} and {request.method=}. {session.get("next")=}')
     if request.method == 'GET':
+        if next_url := request.args.get('next'):
+            session['next'] = next_url
         return render_template('login.html')
-    email = request.form['email']
-    if email in users and request.form['password'] == users[email]['password']:
-        user = User()
-        user.id = email
-        flask_login.login_user(user)
-        logger.info(f'User {email} just logged in')
-        return redirect(url_for('dashboard'))
-    return 'Unauthorized'
+    elif request.method == 'POST':
+        email = request.form['email']
+        if email in users and request.form['password'] == users[email]['password']:
+            user = User()
+            user.id = email
+            flask_login.login_user(user)
+            logger.info(f'User {email} just logged in')
+            if next_url := session.pop('next', None):
+                logger.info(f'redirecting to {next_url=}')
+                return redirect(next_url)
+            logger.info(f'simply redirecting to dashboard - fallback')
+            return redirect(url_for('dashboard'))
+        return 'Unauthorized', 403
 
 @app.route('/logout')
 def logout():
+    logger.info(f'User {flask_login.current_user.id} is logging out')
     flask_login.logout_user()
     return redirect(url_for('festivals'))
 
