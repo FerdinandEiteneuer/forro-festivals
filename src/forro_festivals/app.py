@@ -164,16 +164,7 @@ def update_event():
         logger.warning(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')
         return redirect(url_for('dashboard'))
 
-    logger.info('reloading app...')
-    ## Trigger the "reload-bash" route programmatically using Flask's test_client()
-    #with current_app.test_client() as client:
-    #    response = client.post(
-    #        url_for('reload_bash'),
-    #        headers={'Authorization': f'Token {config.API_TOKEN}'}
-    #    )  # Trigger the reload-bash route
-    #logger.info(f'reloading app route executed, {response.status_code=}')
-
-    # update the festivals.html
+    logger.info('recreating festivals.html ...')
     create_festivals_html()
 
     return redirect(url_for('dashboard'))
