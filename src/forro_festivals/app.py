@@ -1,12 +1,14 @@
 import json
 import subprocess
 import os
+import logging
 
 from pydantic import ValidationError
 from flask import Flask, render_template, request, send_from_directory, jsonify, redirect, current_app, url_for
 import flask_login
 
 import forro_festivals.config as config
+from forro_festivals.config import get_logger
 from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id, add_event_to_db
 from forro_festivals.scripts.event import Event
 from forro_festivals.scripts.notification import post_event_to_ntfy_channel
@@ -17,6 +19,8 @@ app.secret_key = os.environ['APP_SECRET_KEY']
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+logger = get_logger()
 
 def load_json(path):
     with open(path, 'r') as f:
@@ -60,6 +64,11 @@ def festivals():
 
 @app.route('/about')
 def about_page():
+    logger.debug("This is a debug message.")
+    logger.info("This is an info message.")
+    logger.warning("This is a warning message.")
+    logger.error("This is an error message.")
+    logger.critical("This is a critical message.")
     return render_template('about.html')
 
 @app.route('/legal-notice')
