@@ -13,7 +13,10 @@ from forro_festivals.scripts.db import get_events_from_db
 
 def create_festivals_html(template='festivals.html'):
     events = get_events_from_db()
-    events = [event for event in events if event.validated]
+
+    cutoff = datetime.today() - timedelta(days=14)  # show some old festivals that recently happenend
+    events = [event for event in events if event.validated and event.start > cutoff]
+
     festival_data = format_festival_data(events)
 
     app = Flask(__name__, root_path=root_path_flask)
@@ -50,9 +53,7 @@ def ensure_https_scheme(url: str):
         return url
 
 def format_festival_data(events: List[Event]):
-    cutoff = datetime.today() - timedelta(days=30)
 
-    events = [event for event in events if event.start > cutoff]
     events = sorted(events, key=lambda event: event.start)
 
     year_month_events = defaultdict(list)
