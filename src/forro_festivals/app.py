@@ -111,6 +111,10 @@ def form():
         try:
             add_event_to_db(event)
             success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
+
+            ntfy_response = post_event_to_ntfy_channel(event)
+            logger.info(ntfy_response.text)
+        
             return jsonify({'html_msg': success_msg}), 200
         except Exception as e:
             logger.error(f'Could not save {event=} into database')
@@ -167,9 +171,6 @@ def update_event():
             headers={'Authorization': f'Token {config.API_TOKEN}'}
         )  # Trigger the reload-bash route
     logger.info(f'reloading app route executed, {response.status_code=}')
-
-    ntfy_response = post_event_to_ntfy_channel(event)
-    app.logger.info(ntfy_response.text)
 
     return redirect(url_for('dashboard'))
 
