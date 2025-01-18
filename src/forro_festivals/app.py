@@ -110,21 +110,19 @@ def form():
 
         try:
             new_id = add_event_to_db(event)
-
-            if new_id == 0:
-                # TODO: have not looked too deep into this, but probably its a duplicate and
-                #       maybe we should not show the success_msg
-                pass
-            success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
-
-            ntfy_response = post_event_to_ntfy_channel(event, event_id=new_id)
-            logger.info(f'{ntfy_response.status_code=}, {ntfy_response.text=}')
-
-            return jsonify({'html_msg': success_msg}), 200
         except Exception as e:
             logger.error(f'Could not save {event=} into database {e=}')
-            return jsonify({'html_msg': 'Unknown Error'}), 500
+            return jsonify({'error': 'Could not save into database'}), 500
 
+        if new_id != 0:
+            ntfy_response = post_event_to_ntfy_channel(event, event_id=new_id)
+            if ntfy_response.status_code > 200:
+                logger.warning(f'{ntfy_response.status_code=}, {ntfy_response.text=}')
+
+            success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
+            return jsonify({'html_msg': success_msg}), 200
+        elif new_id == 0:
+            return jsonify({'error': 'Entry is duplicated'}), 400
 
 
 
