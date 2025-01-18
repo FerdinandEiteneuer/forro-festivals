@@ -9,6 +9,7 @@ import flask_login
 
 import forro_festivals.config as config
 from forro_festivals.config import get_logger
+from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id, add_event_to_db
 from forro_festivals.scripts.event import Event
 from forro_festivals.scripts.notification import post_event_to_ntfy_channel
@@ -114,7 +115,7 @@ def form():
 
             ntfy_response = post_event_to_ntfy_channel(event)
             logger.info(ntfy_response.text)
-        
+
             return jsonify({'html_msg': success_msg}), 200
         except Exception as e:
             logger.error(f'Could not save {event=} into database')
@@ -164,13 +165,16 @@ def update_event():
         return redirect(url_for('dashboard'))
 
     logger.info('reloading app...')
-    # Trigger the "reload-bash" route programmatically using Flask's test_client()
-    with current_app.test_client() as client:
-        response = client.post(
-            url_for('reload_bash'),
-            headers={'Authorization': f'Token {config.API_TOKEN}'}
-        )  # Trigger the reload-bash route
-    logger.info(f'reloading app route executed, {response.status_code=}')
+    ## Trigger the "reload-bash" route programmatically using Flask's test_client()
+    #with current_app.test_client() as client:
+    #    response = client.post(
+    #        url_for('reload_bash'),
+    #        headers={'Authorization': f'Token {config.API_TOKEN}'}
+    #    )  # Trigger the reload-bash route
+    #logger.info(f'reloading app route executed, {response.status_code=}')
+
+    # update the festivals.html
+    create_festivals_html()
 
     return redirect(url_for('dashboard'))
 
