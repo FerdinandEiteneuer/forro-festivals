@@ -9,6 +9,7 @@ import flask_login
 import forro_festivals.config as config
 from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id, add_event_to_db
 from forro_festivals.scripts.event import Event
+from forro_festivals.scripts.notification import post_event_to_ntfy_channel
 
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET_KEY']
@@ -162,6 +163,9 @@ def update_event():
             headers={'Authorization': f'Token {config.API_TOKEN}'}
         )  # Trigger the reload-bash route
     app.logger.info(f'reloading app route executed, {response.status_code=}')
+
+    ntfy_response = post_event_to_ntfy_channel(event)
+    app.logger.info(ntfy_response.text)
 
     return redirect(url_for('dashboard'))
 
