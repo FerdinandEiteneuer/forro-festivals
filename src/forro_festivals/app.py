@@ -115,9 +115,10 @@ def form():
             return jsonify({'error': 'Could not save into database'}), 500
 
         if new_id != 0:
-            ntfy_response = post_event_to_ntfy_channel(event, event_id=new_id, topic=config.NTFY_TOPIC)
-            if ntfy_response.status_code > 200:
-                logger.warning(f'{ntfy_response.status_code=}, {ntfy_response.text=}')
+            if config.NTFY_TOPIC:
+                ntfy_response = post_event_to_ntfy_channel(event, event_id=new_id, topic=config.NTFY_TOPIC)
+                if ntfy_response.status_code > 200:
+                    logger.warning(f'{ntfy_response.status_code=}, {ntfy_response.text=}')
 
             success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
             return jsonify({'html_msg': success_msg}), 200
