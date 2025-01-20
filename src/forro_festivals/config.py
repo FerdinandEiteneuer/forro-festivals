@@ -20,10 +20,11 @@ static_folder = root_path_flask / 'static'
 template_folder = root_path_flask / 'template'
 
 # data paths
-private_json = root_path_repository / 'data/private.json'
-users_path = root_path_repository / 'data/users.json'
-db_path = root_path_repository / 'data/festivals.db'
-db_backup_folder = root_path_repository / 'data/backups_db'
+data_folder = root_path_repository / 'data'
+private_json = data_folder / 'private.json'
+users_path = data_folder / 'users.json'
+db_path = data_folder / 'festivals.db'
+db_backup_folder = data_folder / 'backups_db'
 
 class DateFormats:
     dm = '%d.%m'  # dd.mm
