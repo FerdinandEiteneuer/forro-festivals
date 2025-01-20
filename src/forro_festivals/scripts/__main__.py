@@ -15,6 +15,7 @@ from forro_festivals.scripts.render_html_pages import render_html_pages
 from forro_festivals.scripts.db import backup_db, delete_events_by_ids, init_db, get_events_from_db
 from forro_festivals.scripts.reload_app import reload_app_by_touch
 from forro_festivals.scripts.update_db_with_forro_app import update_db_with_forro_app
+from forro_festivals.scripts.initialise import initialise
 
 
 @click.group()
@@ -22,15 +23,31 @@ def ff():
     """Main entry point for Forro-Festivals."""
     pass
 
-@ff.command()
-def reload_app():
-    """Reloads the app."""
+#######
+# APP #
+#######
+@click.group()
+def app():
+    """General purpose commands"""
+
+@app.command()
+def init():
+    """Install some required input files for the app."""
+    initialise()
+
+@app.command()
+def reload():
+    """Reloads the app on python-anywhere."""
     reload_app_by_touch()
 
-@ff.command()
+@app.command()
 def query_forro_app_update_db():
     """Queries festival data from forro-app.com and saves it into the database"""
     update_db_with_forro_app()
+
+@ff.command()
+def bla():
+    print('hehehe')
 
 
 ############
@@ -50,7 +67,7 @@ def delete(ids):
 @db.command()
 def backup():
     """Create a backup of the database."""
-    backup_db
+    backup_db()
 
 @db.command()
 def init():
@@ -87,6 +104,7 @@ def all():
     render_html_pages()
 
 
+ff.add_command(app)
 ff.add_command(db)
 ff.add_command(html)
 
