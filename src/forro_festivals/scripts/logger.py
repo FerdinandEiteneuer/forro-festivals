@@ -28,7 +28,6 @@ def get_logger():
     class NtfyHandler(logging.Handler):
         """Sends error messages to ntfy."""
         def emit(self, record):
-            print(f'received {record.message} with level {type(record.levelno)}')
             if record.levelno >= 40 and NTFY_TOPIC is not None:
                 ntfy_msg = formatter.format(record)
                 post_error_to_ntfy_channel(message=ntfy_msg, topic=NTFY_TOPIC)
@@ -36,3 +35,5 @@ def get_logger():
     logger.addHandler(NtfyHandler())
 
     return logger
+
+logger = get_logger()
