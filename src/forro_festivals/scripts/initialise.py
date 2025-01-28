@@ -21,7 +21,9 @@ def init_users_data():
     if not users_path.is_file():
         with open(users_path, 'w') as file:
             users = {
-                'admin': 'admin'
+                'admin': {
+                    'password': 'admin',
+                }
             }
             json.dump(users, file, indent=2)
 
@@ -31,6 +33,7 @@ def initialise():
     * Datafolder
     * Logfolder
     * user database (just a json at the moment)
+    * festival database (Should it exist, this will overwrite the database)
     * private data for impressum
     """
     data_folder.mkdir(exist_ok=True)
