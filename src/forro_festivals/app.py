@@ -8,48 +8,18 @@ from flask import Flask, render_template, request, send_from_directory, jsonify,
 import flask_login
 
 import forro_festivals.config as config
-from forro_festivals.scripts.logger import get_logger
+from forro_festivals.scripts.logger import logger
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id, add_event_to_db
 from forro_festivals.scripts.event import Event
 from forro_festivals.scripts.notification import post_event_to_ntfy_channel
+from forro_festivals import auth
 
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET_KEY']
+app.register_blueprint(auth.bp)
 
-login_manager = flask_login.LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
-logger = get_logger()
-
-def load_json(path):
-    with open(path, 'r') as f:
-        return json.load(f)
-
-users = load_json(config.users_path)
-
-class User(flask_login.UserMixin):
-    pass
-
-@login_manager.user_loader
-def user_loader(email):
-    if email not in users:
-        return
-
-    user = User()
-    user.id = email
-    return user
-
-@login_manager.request_loader
-def request_loader(request):
-    email = request.form.get('email')
-    if email not in users:
-        return
-
-    user = User()
-    user.id = email
-    return user
+auth.login_manager.init_app(app)
 
 @app.route('/favicon.ico')
 def favicon():
@@ -127,33 +97,6 @@ def form():
 
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    logger.info(f'called login with {request.args.get("next")=} and {request.method=}. {session.get("next")=}')
-    if request.method == 'GET':
-        if next_url := request.args.get('next'):
-            session['next'] = next_url
-        return render_template('login.html')
-    elif request.method == 'POST':
-        email = request.form['email']
-        if email in users and request.form['password'] == users[email]['password']:
-            user = User()
-            user.id = email
-            flask_login.login_user(user)
-            logger.info(f'User {email} just logged in')
-            if next_url := session.pop('next', None):
-                logger.info(f'redirecting to {next_url=}')
-                return redirect(next_url)
-            logger.info(f'simply redirecting to dashboard - fallback')
-            return redirect(url_for('dashboard'))
-        return 'Unauthorized', 403
-
-@app.route('/logout')
-def logout():
-    logger.info(f'User {flask_login.current_user.id} is logging out')
-    flask_login.logout_user()
-    return redirect(url_for('festivals'))
-
 @app.route('/dashboard')
 @flask_login.login_required
 def dashboard():
@@ -206,6 +149,10 @@ def dashboard_update_event():
             json=event_data
         )
     return redirect(url_for('dashboard'))
+
+
+
+
 
 
 if __name__ == '__main__':
