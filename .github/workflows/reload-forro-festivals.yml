@@ -16,12 +16,12 @@ jobs:
             -c cookies.txt \
             -d "id=${{ secrets.RELOAD_USER }}" \
             -d "password=${{ secrets.PASSWORD_RELOAD_USER }}" \
-            https://www.forro-festivas.com/login
+            https://www.forro-festivals.com/login
           
           # Use cookies to authenticate
           curl -v -X POST --fail \
-               -b cookies.txt
-               -H "Content-Type: application/json" \
-               www.forro-festivals.com/reload-bash
+           -b cookies.txt
+           -H "Content-Type: application/json" \
+           https://www.forro-festivals.com/reload-bash
 
           rm cookies.txt
