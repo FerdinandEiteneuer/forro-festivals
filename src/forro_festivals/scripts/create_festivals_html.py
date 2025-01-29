@@ -12,12 +12,8 @@ from forro_festivals.scripts.db import get_events_from_db
 
 
 def create_festivals_html(template='festivals.html'):
-    events = get_events_from_db()
 
-    cutoff = datetime.today() - timedelta(days=14)  # show some old festivals that recently happenend
-    events = [event for event in events if event.validated and event.start > cutoff]
-
-    festival_data = format_festival_data(events)
+    festival_data = create_festival_data()
 
     app = Flask(__name__, root_path=root_path_flask)
 

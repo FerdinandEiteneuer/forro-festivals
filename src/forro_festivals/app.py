@@ -1,4 +1,3 @@
-
 from flask import Flask
 
 from forro_festivals.config import APP_SECRET_KEY
