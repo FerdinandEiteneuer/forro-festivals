@@ -11,7 +11,17 @@ jobs:
     steps:
       - name: deploy forro-festivals.com
         run: |
+          # Login
           curl -v -X POST --fail \
+            -c cookies.txt \
+            -d "id=${{ secrets.RELOAD_USER }}" \
+            -d "password=${{ secrets.PASSWORD_RELOAD_USER }}" \
+            https://www.forro-festivas.com/login
+          
+          # Use cookies to authenticate
+          curl -v -X POST --fail \
+               -b cookies.txt
                -H "Content-Type: application/json" \
-               -H "Authorization: Token ${{ secrets.API_TOKEN }}" \
                www.forro-festivals.com/reload-bash
+
+          rm cookies.txt

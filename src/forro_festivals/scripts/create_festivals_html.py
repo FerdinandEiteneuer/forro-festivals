@@ -35,6 +35,14 @@ def create_festivals_html(template='festivals.html'):
         file.write(festivals)
 
 
+def create_festival_data():
+    events = get_events_from_db()
+
+    cutoff = datetime.today() - timedelta(days=14)  # show some old festivals that recently happenend
+    events = [event for event in events if event.validated and event.start > cutoff]
+
+    festival_data = format_festival_data(events)
+    return festival_data
 
 def ensure_https_scheme(url: str):
     """prepends https if no scheme is contained in the url.
