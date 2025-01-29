@@ -1,7 +1,5 @@
 # TODO
 
-figure out how to ...
+* currently festivals.html is dynamically created. its probably wise to still have a backup that i can serve statically so main page is much more stable?
 
-* do the app object creation seperately
-* make several files for the different types of routes (login, logout for instance in one file would be nice seperated
-from the rest)
+
