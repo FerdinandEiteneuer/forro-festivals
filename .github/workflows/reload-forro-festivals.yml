@@ -1,4 +1,4 @@
-name: reload forro-festivals.com
+name: reload www.forro-festivals.com
 
 on:
   push:
@@ -9,19 +9,20 @@ jobs:
   send-webhook:
     runs-on: ubuntu-latest
     steps:
-      - name: deploy forro-festivals.com
+      - name: reload www.forro-festivals.com
         run: |
           # Login
           curl -v -X POST --fail \
             -c cookies.txt \
             -d "id=${{ secrets.RELOAD_USER }}" \
             -d "password=${{ secrets.PASSWORD_RELOAD_USER }}" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
             https://www.forro-festivals.com/login
           
-          # Use cookies to authenticate
+          # Use session cookie to authenticate
           curl -v -X POST --fail \
-           -b cookies.txt
-           -H "Content-Type: application/json" \
-           https://www.forro-festivals.com/reload-bash
+            -b cookies.txt
+            -H "Content-Type: application/json" \
+            https://www.forro-festivals.com/reload-bash
 
           rm cookies.txt
