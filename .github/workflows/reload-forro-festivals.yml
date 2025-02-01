@@ -21,8 +21,9 @@ jobs:
           
           # Use session cookie to authenticate
           curl -v -X POST --fail \
-            -b cookies.txt
+            -b cookies.txt \
             -H "Content-Type: application/json" \
             https://www.forro-festivals.com/reload-bash
 
           rm cookies.txt
+  
