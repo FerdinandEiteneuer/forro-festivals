@@ -2,6 +2,7 @@ from flask import request, render_template, jsonify, Blueprint
 from pydantic import ValidationError
 
 from forro_festivals import config, logger
+from forro_festivals.scripts.create_festivals_html import format_event
 from forro_festivals.scripts.db import add_event_to_db
 from forro_festivals.scripts.event import Event
 from forro_festivals.scripts.notification import post_event_to_ntfy_channel
@@ -32,7 +33,7 @@ def form():
                 if ntfy_response.status_code > 200:
                     logger.warning(f'{ntfy_response.status_code=}, {ntfy_response.text=}')
 
-            success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{event.to_html_string()}'
+            success_msg = f'Event saved successfully! 🎉<br>Preview:<br>{format_event(event)}'
             return jsonify({'html_msg': success_msg}), 200
         elif new_id == 0:
             return jsonify({'error': 'Entry is duplicated'}), 400

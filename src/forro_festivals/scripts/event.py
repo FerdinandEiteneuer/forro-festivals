@@ -15,7 +15,6 @@ def get_timestamp():
 def transform_date(date, fmt_from, fmt_to):
     return datetime.strptime(date, fmt_from).strftime(fmt_to)
 
-
 class Event(BaseModel):
     # Note: potentially, I can add a date for the start of the ticket sell
     id: int = -1  # coming from my database
@@ -85,14 +84,6 @@ class Event(BaseModel):
         merged_data = {**event_data, **partial_data}  # Note: partial_data will overwrite event_data
         return cls(**merged_data)  # If merged data is inconsisted, we will raise here automatically and wont be able to use this
 
-
-    def to_html_string(self):
-        link = self.link
-        if urlparse(self.link).scheme == '':
-            link = f'http://{link}'
-        start = transform_date(self.date_start, fmt_from=DateFormats.ymd, fmt_to=DateFormats.dm)
-        end = transform_date(self.date_end, fmt_from=DateFormats.ymd, fmt_to=DateFormats.dm)
-        return f"[{self.city}, {self.country}] {start} \u2013 {end} | <a href='{link}'>{self.link_text}</a>"
 
     @classmethod
     def from_request(cls, request):

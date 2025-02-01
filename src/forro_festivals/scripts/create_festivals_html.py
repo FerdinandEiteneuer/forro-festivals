@@ -36,6 +36,7 @@ def create_festival_data():
 
     cutoff = datetime.today() - timedelta(days=14)  # show some old festivals that recently happenend
     events = [event for event in events if event.validated and event.start > cutoff]
+    events = sorted(events, key=lambda event: event.start)
 
     festival_data = format_festival_data(events)
     return festival_data
@@ -56,22 +57,24 @@ def ensure_https_scheme(url: str):
         # If the URL already has a valid scheme (http or https), return it as is
         return url
 
+
+def format_event(event: Event):
+    link = ensure_https_scheme(event.link)
+    start = event.start.strftime(DateFormats.dm)
+    end = event.end.strftime(DateFormats.dm)
+
+    festival = f'[{event.city}, {event.country}] ' \
+               f'{start} – {end} | ' \
+               f'<a href="{link}">{event.link_text}</a>'
+    return festival
+
 def format_festival_data(events: List[Event]):
 
-    events = sorted(events, key=lambda event: event.start)
 
     year_month_events = defaultdict(list)
     for event in events:
         year_month = event.start.strftime('%B %Y')  # January 2025
-        link = ensure_https_scheme(event.link)
-        festival = {
-            'location': f'{event.city}, {event.country}',
-            'date_start': event.start.strftime(DateFormats.dm),
-            'date_end': event.end.strftime(DateFormats.dm),
-            'link': link,
-            'link_text': event.link_text,
-        }
-        year_month_events[year_month].append(festival)
+        year_month_events[year_month].append(format_event(event))
 
     return dict(year_month_events)
 

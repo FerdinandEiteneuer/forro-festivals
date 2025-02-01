@@ -1,16 +1,12 @@
 {% extends "base.html" %}
 
-
 {% block content %}
     <h1>Festival Schedule</h1>
     {% for month, festivals in data.items() %}
         <h2>{{ month }}</h2>
         <ul>
             {% for festival in festivals %}
-                <li>
-                    [{{ festival.location }}] {{ festival.date_start }} – {{ festival.date_end }} |
-                    <a href="{{ festival.link }}">{{ festival.link_text }}</a>
-                </li>
+                 <li>{{ festival|safe }}</li>
             {% endfor %}
         </ul>
     {% endfor %}
