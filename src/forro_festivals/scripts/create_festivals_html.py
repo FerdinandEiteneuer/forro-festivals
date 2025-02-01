@@ -4,7 +4,7 @@ from typing import List
 from urllib.parse import urlparse
 
 from flask import Flask, render_template
-
+import pycountry
 
 from forro_festivals.config import static_folder, root_path_flask, DateFormats
 from forro_festivals.scripts.event import Event
@@ -57,20 +57,27 @@ def ensure_https_scheme(url: str):
         # If the URL already has a valid scheme (http or https), return it as is
         return url
 
+def get_flag(event: Event):
+    try:
+        return pycountry.countries.lookup(event.country).flag
+    except LookupError:
+        return event.country
+
+def ws(n: int):
+    """returns whitespace, n characters long"""
+    return n*'&nbsp;'
 
 def format_event(event: Event):
-    link = ensure_https_scheme(event.link)
     start = event.start.strftime(DateFormats.dm)
     end = event.end.strftime(DateFormats.dm)
 
-    festival = f'[{event.city}, {event.country}] ' \
-               f'{start} – {end} | ' \
-               f'<a href="{link}">{event.link_text}</a>'
+    link = ensure_https_scheme(event.link)
+    html_link = f'<a href="{link}">{event.link_text}</a>'
+
+    festival = f'{event.city} {get_flag(event)} | {start} – {end} | {html_link}'
     return festival
 
 def format_festival_data(events: List[Event]):
-
-
     year_month_events = defaultdict(list)
     for event in events:
         year_month = event.start.strftime('%B %Y')  # January 2025

@@ -15,7 +15,8 @@ readme = "README.md"
 dependencies = [
     "Flask>=3.1.0",
     "Flask-Login>=0.6.3",
-    "pydantic"
+    "pydantic",
+    "pycountry",
 ]
 
 keywords = ["flask", "web", "application"]
