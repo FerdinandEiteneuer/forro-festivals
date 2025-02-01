@@ -5,7 +5,6 @@ import pydantic
 from pydantic import BaseModel, Field, field_validator, model_validator, ValidationError
 import re
 from datetime import datetime
-from urllib.parse import urlparse
 
 from forro_festivals.config import DateFormats
 
@@ -36,6 +35,10 @@ class Event(BaseModel):
         #       Therefore, they should better not be corrupted at any stage in my handling of them.
         frozen = True
 
+    @staticmethod
+    def sql_table():
+        return 'events'
+
     @property
     def start(self):
         return datetime.strptime(self.date_start, DateFormats.ymd)
@@ -62,6 +65,18 @@ class Event(BaseModel):
         model = self.model_dump()
         model.pop('id')
         return tuple(model.values())
+
+    @property
+    def sql_values(self):
+        model = self.model_dump()
+        model.pop('id')
+        return tuple(model.values())
+
+    @property
+    def sql_insert_fields(self):
+        fields = list(self.model_fields.keys())
+        fields.remove('id')
+        return fields
 
     def __eq__(self, other):
         if not isinstance(other, Event):
@@ -99,6 +114,10 @@ class Event(BaseModel):
         }
         kwargs = {**default_kwargs, **kwargs}
         return Event(**kwargs)
+
+    @classmethod
+    def from_db_row(cls, db_row):
+        return cls(**db_row)
 
     @classmethod
     def get_default_event(cls):

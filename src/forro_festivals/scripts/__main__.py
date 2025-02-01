@@ -12,11 +12,11 @@ from forro_festivals.scripts.cli_utils import validate_event_ids
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.create_legal_notice_html import create_legal_notice_html
 from forro_festivals.scripts.render_html_pages import render_html_pages
-from forro_festivals.scripts.db import backup_db, delete_events_by_ids, init_db, get_events_from_db
 from forro_festivals.scripts.reload_app import reload_app_by_touch
 from forro_festivals.scripts.update_db_with_forro_app import update_db_with_forro_app
 from forro_festivals.scripts.initialise import initialise
-
+from forro_festivals.scripts.user import User
+from forro_festivals.scripts import db_api
 
 @click.group()
 def ff():
@@ -45,10 +45,6 @@ def query_forro_app_update_db():
     """Queries festival data from forro-app.com and saves it into the database"""
     update_db_with_forro_app()
 
-@ff.command()
-def bla():
-    print('hehehe')
-
 
 ############
 # DATABASE #
@@ -62,24 +58,48 @@ def db():
 @click.option('--ids', required=True, type=str, callback=validate_event_ids, help='ID(s) of the record to delete. Example: "1,5,10-19,30"')
 def delete(ids):
     """Delete record(s) from the database."""
-    delete_events_by_ids(ids)
+    db_api.delete_events_by_ids(ids)
 
 @db.command()
 def backup():
     """Create a backup of the database."""
-    backup_db()
+    db_api.backup_db()
 
 @db.command()
-def init():
+@click.option('--delete', is_flag=True)
+def init(delete):
     """Deletes database (if exists) and creates it fresh."""
-    init_db()
+    db_api.init_db(delete)
 
 @db.command()
 def show():
     """Prints all entries in the database."""
-    for event in get_events_from_db():
+    for event in db_api.get_events_from_db():
         print(event)
 
+@db.command()
+@click.option('--id', required=True)
+@click.option('--password', required=True)
+@click.option('--permissions', required=True)
+def create_user(id, password, permissions):
+    """Creates a user."""
+    user = User(id=id, hashed_pw=password, permissions=permissions)
+    db_api.create_user(user)
+
+@db.command()
+@click.option('--id', required=True)
+@click.option('--password', required=True)
+@click.option('--permissions', required=True)
+def update_user(id, password, permissions):
+    """Updates a user."""
+    user = User(id=id, hashed_pw=password, permissions=permissions)
+    db_api.update_user(user)
+
+@db.command()
+def show_users():
+    """Prints all users."""
+    for user in db_api.get_users():
+        print(user)
 
 ########
 # HTML #

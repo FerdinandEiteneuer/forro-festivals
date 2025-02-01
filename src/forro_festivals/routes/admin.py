@@ -9,7 +9,7 @@ from forro_festivals.scripts.event import Event
 from forro_festivals import config, logger
 from forro_festivals.routes import auth
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
-from forro_festivals.scripts.db import get_events_from_db, get_event_from_db_by_id, update_event_by_id
+from forro_festivals.scripts.db_api import get_events_from_db, get_event_from_db_by_id, update_event_by_id
 
 bp = Blueprint('admin', __name__)
 

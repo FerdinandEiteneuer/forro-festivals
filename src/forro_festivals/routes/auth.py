@@ -1,28 +1,15 @@
-import json
 from functools import wraps
-from typing import List, Set
+from typing import List
 
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for, session
 import flask_login
 
+from forro_festivals.scripts import db_api
 from forro_festivals.scripts.logger import logger
-import forro_festivals.config as config
+
 
 bp = Blueprint('auth', __name__)
-
-def load_json(path):
-    with open(path, 'r') as f:
-        return json.load(f)
-
-# TODO: yes, storing this in a json is just temporary
-users = load_json(config.users_path)
-
-class User(flask_login.UserMixin):
-    def __init__(self, id: str, permissions: List[str]):
-        self.id = id
-        self.permissions = permissions
-
 
 login_manager = flask_login.LoginManager()
 login_manager.login_view = 'auth.login'
@@ -30,17 +17,13 @@ login_manager.login_view = 'auth.login'
 @login_manager.user_loader
 def user_loader(id):
     logger.info('user loader called')
-    if id not in users:
-        return None
-    return User(id=id, permissions=users[id]['permissions'])
+    return db_api.get_user(id)
 
 @login_manager.request_loader
 def request_loader(request):
-    logger.info(f'request loader called {dict(request.form)=}, {dict(request.args)=}')
+    logger.info('request loader called')
     id = request.form.get('id')
-    if id not in users:
-        return None
-    return User(id=id, permissions=users[id]['permissions'])
+    return db_api.get_user(id)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -50,8 +33,8 @@ def login():
         return render_template('login.html')
     elif request.method == 'POST':
         id = request.form['id']
-        if id in users and request.form['password'] == users[id]['password']:
-            user = User(id=id, permissions=users[id]['permissions'])
+        user = db_api.get_user(id)
+        if user and request.form['password'] == user.hashed_pw:
             flask_login.login_user(user)
             logger.info(f'User {user.id} just logged in')
             if next_url := session.pop('next', None):

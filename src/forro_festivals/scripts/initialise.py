@@ -2,7 +2,7 @@ import os
 import json
 
 from forro_festivals.config import data_folder, private_json, users_path, LOG_FOLDER, db_backup_folder
-from forro_festivals.scripts.db import init_db
+from forro_festivals.scripts.db_api import init_db
 
 def init_private_data():
     """The private data gets used in the legal-notice.html (Impressum)"""

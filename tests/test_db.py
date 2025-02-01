@@ -1,5 +1,7 @@
 from pathlib import Path
+import pytest
 
+from forro_festivals.routes.auth import User
 from forro_festivals.scripts.db import DataBase
 from forro_festivals.scripts.event import Event
 import tempfile
@@ -12,7 +14,7 @@ def test_db():
         date_end='2024-10-04',
         city='Cologne',
         country='Germany',
-        organizer='event0orga',
+        organizer='event 0 orga',
         link='https://www.example.com',
         link_text='example',
         validated=True,
@@ -23,7 +25,7 @@ def test_db():
         date_end='2023-06-18',
         city='Lissabon',
         country='Portugal',
-        organizer='event1orga',
+        organizer='event 1 orga',
         link='https://www.example2.com',
         link_text='example2',
         validated=True,
@@ -34,7 +36,7 @@ def test_db():
         date_end='2021-04-28',
         city='Berlin',
         country='Germany',
-        organizer='event2orga',
+        organizer='event 2 orga',
         link='https://www.example2.com',
         link_text='FakeFestival',
         validated=False,
@@ -83,3 +85,40 @@ def test_db():
 
         db.delete_events_by_ids(event_ids=[1234, 4321])
         assert db.get_size() == 0
+
+@pytest.fixture
+def db():
+    with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+        path = Path(temp_file.name)
+        db = DataBase(path)
+        db.create()
+        yield db
+
+def test_user(db):
+    user = User(
+        id='testuser@bla.com',
+        permissions='abc, def',
+        hashed_pw='123',
+    )
+
+    db.insert(user)
+
+    db_users = db.get_all(User)
+    db_user = db.get_by_id('testuser@bla.com', User)
+    assert user == db_users[0]
+    assert user == db_user
+    assert len(db_users) == 1
+
+    updated_user = User(
+        id='testuser@bla.com',
+        permissions='abc',  # remove a permission in comparison to 'user'
+        hashed_pw='123',
+    )
+
+    db.update_by_id(updated_user.id, updated_user)
+    db_user = db.get_by_id('testuser@bla.com', User)
+    assert db_user.permissions == 'abc'
+
+    assert db.delete_by_id('testuser@bla.com', User) is True
+    assert len(db.get_all(User)) == 0
+    assert db.delete_by_id('not-existent', User) is False

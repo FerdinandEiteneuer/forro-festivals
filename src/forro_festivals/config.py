@@ -7,7 +7,7 @@ API_TOKEN = os.environ.get('API_TOKEN')
 USERNAME = os.environ.get('USERNAME')
 APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 NTFY_TOPIC = os.environ.get('NTFY_TOPIC')
-LOG_FOLDER = Path(os.environ.get('LOG_FOLDER', 'data/logs'))
+LOG_FOLDER = os.environ.get('LOG_FOLDER')
 LOG_CONSOLE = os.environ.get('LOG_CONSOLE') == 'True'
 
 # Paths - basic

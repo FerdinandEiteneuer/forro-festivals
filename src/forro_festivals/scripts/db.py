@@ -11,51 +11,10 @@ import sqlite3
 from contextlib import contextmanager
 from typing import List, Optional
 import logging
-from datetime import datetime
-import shutil
 
+from forro_festivals.scripts.user import User
 from forro_festivals.scripts.event import Event
-from forro_festivals.config import db_path, db_backup_folder
 
-def init_db():
-    db = DataBase(db_path)
-    db.create()
-
-def backup_db():
-    db_backup_folder.mkdir(exist_ok=True)
-    timestamp = datetime.today().strftime('%y-%m-%d--%H-%M-%S')
-    shutil.copy(db_path, db_backup_folder / f'festivals-{timestamp}.db')
-
-def update_db(events: List[Event]):
-    db = DataBase(db_path)
-    event_ids = []
-    for event in events:
-        event_id = db.insert_event(event)
-        event_ids.append(event_id)
-    return event_ids
-
-def add_event_to_db(event: Event):
-    db = DataBase(db_path)
-    return db.insert_event(event)
-
-def get_events_from_db():
-    db = DataBase(db_path)
-    return db.get_all_events()
-
-def get_event_from_db_by_id(event_id: int):
-    db = DataBase(db_path)
-    return db.get_event_by_id(event_id=event_id)
-
-def update_event_by_id(event_id: int, event: Event):
-    db = DataBase(db_path)
-    db.update_event_by_id(event_id=event_id, event=event)
-
-def delete_events_by_ids(event_ids: List[int] | int):
-    """Deletes events conveniently by supplying a string like
-    event_ids = '1,3-5,10,19-29'
-    """
-    db = DataBase(db_path)
-    db.delete_events_by_ids(event_ids=event_ids)
 
 @contextmanager
 def db_ops(path):
@@ -76,12 +35,13 @@ class DataBase:
     def __init__(self, path):
         self.path = path
 
-    def create(self):
+    def create(self, delete=True):
         """
         Initializes db. Use with care, as it potentially removes existing db
         """
 
-        self.path.unlink(missing_ok=True)
+        if delete:
+            self.path.unlink(missing_ok=True)
 
         with db_ops(self.path) as cursor:
             cursor.execute("""
@@ -103,65 +63,91 @@ class DataBase:
                 );
             """
             )
-    def insert_event(self, event: Event):
-        try:
-            Event(**event.model_dump())
-        except Exception as e:
-            logging.error(f'Trying to insert inconsistent {event=} into the database')
-            raise
 
         with db_ops(self.path) as cursor:
             cursor.execute("""
-                INSERT OR IGNORE INTO events (date_start, date_end, city, country, organizer, uuid, link, link_text, validated, source, timestamp)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, event.to_tuple()
+                CREATE TABLE IF NOT EXISTS users (
+                    id TEXT UNIQUE NOT NULL,
+                    permissions TEXT NOT NULL,
+                    hashed_pw TEXT NOT NULL
+                );
+            """
             )
+
+    def get_by_id(self, id, cls) -> Optional['cls']:
+        with db_ops(self.path) as cursor:
+            cursor.execute(f'SELECT * FROM {cls.sql_table()} WHERE id = ?', (id,))
+            row = cursor.fetchone()
+        if row:
+            return cls.from_db_row(row)
+        else:
+            return None
+
+    def delete_by_id(self, id, cls: type(User) | type(Event)) -> bool:
+        with db_ops(self.path) as cursor:
+            cursor.execute(f'DELETE FROM {cls.sql_table()} WHERE id = ?', (id, ))
+            success = not cursor.rowcount == 0
+            if not success:
+                print(f"No row found with the given {id=}")
+            return success
+
+    def insert(self, obj: User | Event):
+        cls = type(obj)
+        try:
+            cls(**obj.model_dump())
+        except Exception:
+            logging.error(f'Trying to insert inconsistent {obj=} into the database')
+            raise
+
+        insert_fields = ', '.join(obj.sql_insert_fields)
+        question_marks = ', '.join(len(obj.sql_insert_fields) * ['?'])
+
+        with db_ops(self.path) as cursor:
+            sql_update = f'INSERT OR IGNORE INTO {obj.sql_table()} ({insert_fields}) VALUES ({question_marks})'
+            cursor.execute(sql_update, obj.sql_values)
+
             # In case of duplicate, this returns 0. In case a valid entry is submitted, returns the id
             return cursor.lastrowid
 
-    def update_event_by_id(self, event_id: int, event: Event):
+    def get_all(self, cls: type(User) | type(Event)):
         with db_ops(self.path) as cursor:
-            cursor.execute("""
-                UPDATE events
-                SET date_start = ?, date_end = ?, city = ?, country = ?, organizer = ?, uuid = ?, link = ?, link_text = ?, validated = ?, source = ?, timestamp = ?
+            cursor.execute(f'SELECT * FROM {cls.sql_table()}')
+            db_objects = cursor.fetchall()
+        objects = []
+        for db_object in db_objects:
+            objects.append(cls.from_db_row(db_object))
+        return objects
+
+    def update_by_id(self, id, obj: User | Event):
+        with db_ops(self.path) as cursor:
+            fields = ', '.join(f'{field} = ?' for field in obj.sql_insert_fields)
+            update = f'''
+                UPDATE {obj.sql_table()}
+                SET {fields}
                 WHERE id = ?
-            """, event.to_tuple() + (event_id,))
+            '''
+            cursor.execute(update, obj.sql_values + (id, ))
+
+    #### EVENT ####
+    def insert_event(self, event: Event):
+        return self.insert(event)
+
+    def update_event_by_id(self, event_id: int, event: Event):
+        return self.update_by_id(event_id, event)
 
     def delete_events_by_ids(self, event_ids: List[int] | int):
-        if isinstance(event_ids, int):
+        if not isinstance(event_ids, list):
             event_ids = [event_ids]
-        placeholders = ', '.join(len(event_ids) * ['?'])
-        with db_ops(self.path) as cursor:
-            sql_statement = f"""
-                DELETE FROM events
-                WHERE id in ({placeholders})
-            """
-            cursor.execute(sql_statement, tuple(event_ids))
-            if cursor.rowcount == 0:
-                print("No row found with the given id(s).")
-            else:
-                print(f"Deleted {cursor.rowcount} row(s). (Received {len(event_ids)} rows to be deleted)")
+        deletions = 0
+        for event_id in event_ids:
+            deletions += self.delete_by_id(event_id, cls=Event)
+        return deletions
 
     def get_all_events(self) -> List[dict]:
-        with db_ops(self.path) as cursor:
-            cursor.execute("SELECT * FROM events")
-            db_events = cursor.fetchall()
-
-        events = []
-        for db_event in db_events:
-            events.append(Event(**dict(db_event)))
-        return events
+        return self.get_all(Event)
 
     def get_event_by_id(self, event_id: int) -> Optional[Event]:
-        with db_ops(self.path) as cursor:
-            cursor.execute("SELECT * FROM events WHERE id = ?", (event_id,))
-            db_event = cursor.fetchone()  # Fetch only one result
-
-        # If the event was found, convert it to an Event object
-        if db_event:
-            return Event(**dict(db_event))
-        else:
-            return None  # Return None if the event was not found
+        return self.get_by_id(id=event_id, cls=Event)
 
     def get_size(self) -> int:
         return len(self.get_all_events())
