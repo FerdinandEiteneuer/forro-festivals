@@ -23,6 +23,7 @@ def init_users_data():
             users = {
                 'admin': {
                     'password': 'admin',
+                    'permissions': ['dashboard'],
                 }
             }
             json.dump(users, file, indent=2)
@@ -43,6 +44,8 @@ def initialise():
     init_private_data()
     init_users_data()
 
+    # TODO(fe) make a confirm step if you want to delete a db if exists?
+    #          This would be consistent with init_private/users_data which dont overwrite
     init_db()
 
 
