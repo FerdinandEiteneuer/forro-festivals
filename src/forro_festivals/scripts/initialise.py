@@ -2,10 +2,14 @@ import os
 import json
 
 from forro_festivals.config import data_folder, private_json, users_path, LOG_FOLDER, db_backup_folder
+from forro_festivals.scripts import db_api
 from forro_festivals.scripts.db_api import init_db
+from forro_festivals.scripts.passwords import hash_password
+from forro_festivals.scripts.user import User
+
 
 def init_private_data():
-    """The private data gets used in the legal-notice.html (Impressum)"""
+    """The private data gets used in the legal-notice.html (Impressum)."""
     if not private_json.is_file():
         with open(private_json, 'w') as file:
             private_data = {
@@ -16,17 +20,14 @@ def init_private_data():
             }
             json.dump(private_data, file, indent=2)
 
-def init_users_data():
-    """creates json with users that can access the /dashboard."""
-    if not users_path.is_file():
-        with open(users_path, 'w') as file:
-            users = {
-                'admin': {
-                    'password': 'admin',
-                    'permissions': ['dashboard'],
-                }
-            }
-            json.dump(users, file, indent=2)
+def create_test_user():
+    """Creates a first user."""
+    user = User(
+        id='admin',
+        permissions='dashboard',
+        hashed_pw=hash_password('admin')
+    )
+    db_api.insert_user(user)
 
 def initialise():
     """Sets up folders and files required for running the app.
@@ -38,16 +39,12 @@ def initialise():
     * private data for impressum
     """
     data_folder.mkdir(exist_ok=True)
-    LOG_FOLDER.mkdir(exist_ok=True)
     db_backup_folder.mkdir(exist_ok=True)
 
     init_private_data()
-    init_users_data()
 
-    # TODO(fe) make a confirm step if you want to delete a db if exists?
-    #          This would be consistent with init_private/users_data which dont overwrite
-    init_db()
-
+    init_db(delete=True)
+    create_test_user()
 
 if __name__ == '__main__':
     initialise()
