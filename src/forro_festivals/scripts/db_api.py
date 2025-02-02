@@ -49,7 +49,7 @@ def delete_events_by_ids(event_ids: List[int] | int):
     db = DataBase(db_path)
     db.delete_events_by_ids(event_ids=event_ids)
 
-def create_user(user: User):
+def insert_user(user: User):
     db = DataBase(db_path)
     db.insert(user)
 
