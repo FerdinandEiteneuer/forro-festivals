@@ -17,6 +17,7 @@ dependencies = [
     "Flask-Login>=0.6.3",
     "pydantic",
     "pycountry",
+    "argon2-cffi",
 ]
 
 keywords = ["flask", "web", "application"]
