@@ -34,6 +34,7 @@ def get_logger():
         logger.addHandler(console_handler)
 
     if LOG_FOLDER:
+        Path(LOG_FOLDER).mkdir(exist_ok=True, parents=True)
         filename = Path(LOG_FOLDER) / 'app.log'
         file_handler = RotatingFileHandler(filename=filename, maxBytes=1e6, backupCount=5)
         file_handler.setLevel(logging.INFO)
