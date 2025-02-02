@@ -11,6 +11,8 @@ import click
 from forro_festivals.scripts.cli_utils import validate_event_ids
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.create_legal_notice_html import create_legal_notice_html
+from forro_festivals.scripts.db_api import get_user
+from forro_festivals.scripts.passwords import hash_password
 from forro_festivals.scripts.render_html_pages import render_html_pages
 from forro_festivals.scripts.reload_app import reload_app_by_touch
 from forro_festivals.scripts.update_db_with_forro_app import update_db_with_forro_app
@@ -33,7 +35,10 @@ def app():
 @app.command()
 def init():
     """Install some required input files for the app."""
-    initialise()
+    if click.confirm(text='This deletes existing database, if confirmed. Go on?', default=False):
+        initialise()
+    else:
+        click.echo("cancelled.")
 
 @app.command()
 def reload():
@@ -77,29 +82,52 @@ def show():
     for event in db_api.get_events_from_db():
         print(event)
 
-@db.command()
-@click.option('--id', required=True)
-@click.option('--password', required=True)
-@click.option('--permissions', required=True)
-def create_user(id, password, permissions):
-    """Creates a user."""
-    user = User(id=id, hashed_pw=password, permissions=permissions)
-    db_api.create_user(user)
+#########
+# USERS #
+#########
+@click.group()
+def users():
+    """Database related commands."""
+    pass
 
-@db.command()
+@users.command()
 @click.option('--id', required=True)
 @click.option('--password', required=True)
 @click.option('--permissions', required=True)
-def update_user(id, password, permissions):
-    """Updates a user."""
-    user = User(id=id, hashed_pw=password, permissions=permissions)
+def create(id, password, permissions):
+    """Creates a user."""
+    user = User(
+        id=id,
+        permissions=permissions,
+        hashed_pw=hash_password(password),
+    )
+    db_api.insert_user(user)
+
+@users.command()
+@click.option('--id', required=True)
+@click.option('--permissions', required=True, default=None)
+def update(id, permissions):
+    """Updates permissions."""
+    user = get_user(id)
+    if not user:
+        click.echo(f"User {id} does not exist")
+
+    user = User(id=id, hashed_pw=user.hashed_pw, permissions=permissions)
     db_api.update_user(user)
 
-@db.command()
-def show_users():
+
+@users.command()
+def show():
     """Prints all users."""
     for user in db_api.get_users():
-        print(user)
+        print(f'{user.id} {user.permission_set}')
+
+@users.command()
+@click.option('--id', required=True)
+def delete(id):
+    """Deletes a user by id."""
+    db_api.delete_user(id)
+
 
 ########
 # HTML #
@@ -127,6 +155,7 @@ def all():
 ff.add_command(app)
 ff.add_command(db)
 ff.add_command(html)
+ff.add_command(users)
 
 if __name__ == '__main__':
     ff()
