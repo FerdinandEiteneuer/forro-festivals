@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forró Festivals</title>
+
+    <meta property="og:title" content="My Website Title">
+    <meta property="og:description" content="A short and useful description of my website.">
+    <meta property="og:url" content="https://example.com">
+    <meta property="og:image" content="https://commons.wikimedia.org/wiki/File:Simple.jpg">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="My Website Name">
+
     <link rel="stylesheet" href="/static/styles.css">
     {% block head %}{% endblock %}
 </head>
@@ -34,6 +42,7 @@
 
     <!-- Link to the web manifest -->
     <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+
 
 
     <!-- Navigation bar -->
