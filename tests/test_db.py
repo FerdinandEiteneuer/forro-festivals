@@ -1,7 +1,9 @@
 from pathlib import Path
+from unittest.mock import patch
+
 import pytest
 
-from forro_festivals.routes.auth import User
+from forro_festivals.scripts.user import User, Permissions
 from forro_festivals.scripts.db import DataBase
 from forro_festivals.scripts.event import Event
 import tempfile
@@ -94,10 +96,15 @@ def db():
         db.create()
         yield db
 
-def test_user(db):
+@pytest.fixture
+def permission_mock():
+    with patch.object(Permissions, "values", return_value={'a', 'b', 'c'}):
+        yield
+
+def test_user(db, permission_mock):
     user = User(
         id='testuser@bla.com',
-        permissions='abc, def',
+        permissions='a, b',
         hashed_pw='123',
     )
 
@@ -111,13 +118,13 @@ def test_user(db):
 
     updated_user = User(
         id='testuser@bla.com',
-        permissions='abc',  # remove a permission in comparison to 'user'
+        permissions='a',  # remove a permission in comparison to 'user'
         hashed_pw='123',
     )
 
     db.update_by_id(updated_user.id, updated_user)
     db_user = db.get_by_id('testuser@bla.com', User)
-    assert db_user.permissions == 'abc'
+    assert db_user.permissions == 'a'
 
     assert db.delete_by_id('testuser@bla.com', User) is True
     assert len(db.get_all(User)) == 0
