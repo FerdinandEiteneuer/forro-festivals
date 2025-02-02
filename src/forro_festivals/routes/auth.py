@@ -7,12 +7,14 @@ import flask_login
 
 from forro_festivals.scripts import db_api
 from forro_festivals.scripts.logger import logger
-
+from forro_festivals.scripts.passwords import hash_password, verify_password
 
 bp = Blueprint('auth', __name__)
 
 login_manager = flask_login.LoginManager()
 login_manager.login_view = 'auth.login'
+
+
 
 @login_manager.user_loader
 def user_loader(id):
@@ -34,7 +36,7 @@ def login():
     elif request.method == 'POST':
         id = request.form['id']
         user = db_api.get_user(id)
-        if user and request.form['password'] == user.hashed_pw:
+        if user and verify_password(request.form['password'], user.hashed_pw):
             flask_login.login_user(user)
             logger.info(f'User {user.id} just logged in')
             if next_url := session.pop('next', None):
@@ -60,7 +62,7 @@ def permissions_required(permissions: List[str]):
         @wraps(fn)
         def decorated_view(*args, **kwargs):
             user = flask_login.current_user
-            if set(permissions).issubset(user.permissions):
+            if set(permissions).issubset(user.permission_set):
                 logger.info(f'{user.permissions=}')
                 logger.info(f'{permissions=}')
                 return fn(*args, **kwargs)
