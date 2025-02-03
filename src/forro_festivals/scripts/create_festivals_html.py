@@ -60,7 +60,6 @@ def ensure_https_scheme(url: str):
 def get_flag(event: Event):
     if event.country == 'Jupiter':
         return '🪐'  # Easteregg für kleine Miris
-
     try:
         return pycountry.countries.lookup(event.country).flag
     except LookupError:
