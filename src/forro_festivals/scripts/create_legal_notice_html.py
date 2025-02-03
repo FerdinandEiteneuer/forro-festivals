@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 import json
 
+from forro_festivals.app import build_app
 from forro_festivals.config import static_folder, private_json, root_path_flask
 
 def load_private_data(path):
@@ -11,7 +12,7 @@ def load_private_data(path):
 def create_legal_notice_html(template='legal-notice.html'):
     private_data = load_private_data(private_json)
 
-    app = Flask(__name__, root_path=root_path_flask)
+    app = build_app()
 
     # The below 3 lines are needed since I added url_for into the base.html
     app.config['SERVER_NAME'] = 'localhost:5000'
@@ -19,6 +20,7 @@ def create_legal_notice_html(template='legal-notice.html'):
     app.config['PREFERRED_URL_SCHEME'] = 'http'
 
     with app.app_context():
+
         legal_notice = render_template(template, data=private_data)
 
     static_folder.mkdir(exist_ok=True)
