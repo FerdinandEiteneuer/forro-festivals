@@ -22,7 +22,7 @@ def update_db(events: List[Event]):
     db = DataBase(db_path)
     event_ids = []
     for event in events:
-        event_id = db.insert_event(event)
+        event_id = db.insert(event)
         event_ids.append(event_id)
     return event_ids
 
@@ -40,7 +40,7 @@ def get_event_from_db_by_id(event_id: int):
 
 def update_event_by_id(event_id: int, event: Event):
     db = DataBase(db_path)
-    db.update_event_by_id(event_id=event_id, event=event)
+    db.update_by_id(id=event_id, obj=event)
 
 def delete_events_by_ids(event_ids: List[int] | int):
     """Deletes events conveniently by supplying a string like

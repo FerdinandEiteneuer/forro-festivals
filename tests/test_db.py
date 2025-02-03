@@ -50,18 +50,18 @@ def test_db():
         db = DataBase(path)
 
         db.create()
-        event_id = db.insert_event(event_0)
+        event_id = db.insert(event_0)
         assert event_id == 1  # First id created
 
         assert event_0 == db.get_event_by_id(event_id=1)
         assert db.get_event_by_id(event_id=123) is None
 
-        event_id = db.insert_event(event_0)  # duplicate which should not show up in db.
+        event_id = db.insert(event_0)  # duplicate which should not show up in db.
         assert event_id == 0  # Since this is a duplicated, 0 should be returned by insert_event
         # Note: the sqlite3 db did increase its id counter though!
 
-        assert db.insert_event(event_1) == 3  # 3 because it's the third insertion event
-        assert db.insert_event(event_2) == 4
+        assert db.insert(event_1) == 3  # 3 because it's the third insertion event
+        assert db.insert(event_2) == 4
 
         # Example usage
         events = db.get_all_events()
@@ -73,7 +73,7 @@ def test_db():
 
         partial_data = {'city': 'Changed City'}
         event_0 = Event.merge(event=event_0, partial_data=partial_data)
-        db.update_event_by_id(event_id=1, event=event_0)
+        db.update_by_id(id=1, obj=event_0)
 
         events = db.get_all_events()
         assert events[0].id == 1

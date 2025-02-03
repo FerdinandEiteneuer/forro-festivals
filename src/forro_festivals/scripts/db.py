@@ -129,12 +129,6 @@ class DataBase:
             cursor.execute(update, obj.sql_values + (id, ))
 
     #### EVENT ####
-    def insert_event(self, event: Event):
-        return self.insert(event)
-
-    def update_event_by_id(self, event_id: int, event: Event):
-        return self.update_by_id(event_id, event)
-
     def delete_events_by_ids(self, event_ids: List[int] | int):
         if not isinstance(event_ids, list):
             event_ids = [event_ids]
