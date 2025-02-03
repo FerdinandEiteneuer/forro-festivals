@@ -5,10 +5,21 @@ import os
 # Env vars
 API_TOKEN = os.environ.get('API_TOKEN')
 USERNAME = os.environ.get('USERNAME')
-APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
-NTFY_TOPIC = os.environ.get('NTFY_TOPIC')
 LOG_FOLDER = os.environ.get('LOG_FOLDER')
-LOG_CONSOLE = os.environ.get('LOG_CONSOLE') == 'True'
+
+ENV = os.environ.get('ENV', default='prod')
+
+if ENV == 'prod':
+    APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
+    NTFY_TOPIC = os.environ.get('NTFY_TOPIC')
+    LOG_CONSOLE = os.environ.get('LOG_CONSOLE') == 'True'
+elif ENV == 'dev':
+    APP_SECRET_KEY = 'unsecure'
+    NTFY_TOPIC = None
+    LOG_CONSOLE = True
+else:
+    raise ValueError(f'{ENV=} must be one of "prod" or "dev".')
+
 
 # Paths - basic
 root_path_repository = Path(__file__).parent.parent.parent
