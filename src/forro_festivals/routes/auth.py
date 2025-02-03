@@ -7,7 +7,7 @@ import flask_login
 
 from forro_festivals.scripts import db_api
 from forro_festivals.scripts.logger import logger
-from forro_festivals.scripts.passwords import hash_password, verify_password
+from forro_festivals.scripts.passwords import verify_password
 
 bp = Blueprint('auth', __name__)
 
