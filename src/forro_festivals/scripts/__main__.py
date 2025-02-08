@@ -8,6 +8,7 @@ This module creates a cli application for common tasks like
 
 import click
 
+from forro_festivals.app import build_app
 from forro_festivals.scripts.cli_utils import validate_event_ids
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.create_legal_notice_html import create_legal_notice_html
@@ -25,12 +26,20 @@ def ff():
     """Main entry point for Forro-Festivals."""
     pass
 
+##############
+# DEV SERVER #
+##############
+@ff.command()
+def run():
+    """Starts app locally."""
+    build_app().run(debug=True)
+
 #######
 # APP #
 #######
 @click.group()
 def app():
-    """General purpose commands"""
+    """General purpose commands."""
 
 @app.command()
 def init():
