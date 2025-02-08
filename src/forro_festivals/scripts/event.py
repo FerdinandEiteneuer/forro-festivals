@@ -27,6 +27,9 @@ class Event(BaseModel):
     link_text: str
     validated: bool = True
     source: str
+    #date_next_lot: str = None
+    #validated_next_lot: bool = False
+    #date_
     timestamp: str = Field(default_factory=get_timestamp)  # refers to object creation timestamp
 
     class Config:

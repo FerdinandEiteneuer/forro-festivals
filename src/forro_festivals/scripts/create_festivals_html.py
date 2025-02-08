@@ -31,14 +31,22 @@ def create_festivals_html(template='festivals.html'):
         file.write(festivals)
 
 
-def create_festival_data():
+def get_current_events():
     events = get_events_from_db()
 
     cutoff = datetime.today() - timedelta(days=14)  # show some old festivals that recently happenend
     events = [event for event in events if event.validated and event.start > cutoff]
     events = sorted(events, key=lambda event: event.start)
+    return events
 
+def create_festival_data():
+    events = get_current_events()
     festival_data = format_festival_data(events)
+    return festival_data
+
+def create_festival_data_short():
+    events = get_current_events()
+    festival_data = format_festival_data_short(events)
     return festival_data
 
 def ensure_https_scheme(url: str):
@@ -66,17 +74,26 @@ def get_flag(event: Event):
         return event.country
 
 def ws(n: int):
-    """returns whitespace, n characters long"""
+    """returns whitespace, n characters long."""
     return n*'&nbsp;'
 
-def format_event(event: Event):
+def format_event(event: Event, include_link=True):
     start = event.start.strftime(DateFormats.dm)
     end = event.end.strftime(DateFormats.dm)
 
     link = ensure_https_scheme(event.link)
     html_link = f'<a href="{link}">{event.link_text}</a>'
 
-    festival = f'{event.city} {get_flag(event)} | {start} – {end} | {html_link}'
+    if include_link:
+
+        festival = f'{event.city} {get_flag(event)} | {start} – {end} | {html_link}'
+        import random
+        if random.randint(1, 100) > 70:
+            festival += f'{ws(10)}next lot: 23.04 20:00'
+    else:
+        festival = f'{event.city} {get_flag(event)}, {start} – {end}'
+
+
     return festival
 
 def format_festival_data(events: List[Event]):
@@ -87,7 +104,11 @@ def format_festival_data(events: List[Event]):
 
     return dict(year_month_events)
 
-
+def format_festival_data_short(events: List[Event]):
+    return [
+        format_event(event, include_link=False)
+        for event in events
+    ]
 
 if __name__ == '__main__':
     create_festivals_html()

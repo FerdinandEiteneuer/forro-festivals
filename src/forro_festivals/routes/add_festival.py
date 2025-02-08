@@ -1,8 +1,9 @@
-from flask import request, render_template, jsonify, Blueprint
+from flask import request, render_template, jsonify, Blueprint, redirect
 from pydantic import ValidationError
 
 from forro_festivals import config, logger
-from forro_festivals.scripts.create_festivals_html import format_event
+from forro_festivals.scripts.create_festivals_html import format_event, create_festival_data, \
+    format_festival_data_short, create_festival_data_short
 from forro_festivals.scripts.db_api import add_event_to_db
 from forro_festivals.scripts.event import Event
 from forro_festivals.scripts.notification import post_event_to_ntfy_channel
@@ -37,3 +38,10 @@ def form():
             return jsonify({'html_msg': success_msg}), 200
         elif new_id == 0:
             return jsonify({'error': 'Entry is duplicated'}), 400
+
+@bp.route('/update-next-lot', methods=['GET'])
+def suggest_lot_date():
+    festivals_short = create_festival_data_short()
+    return render_template(template_name_or_list='update-next-lot.html', festivals_short=festivals_short)
+
+
