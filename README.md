@@ -21,12 +21,12 @@ ff app init
 
 This 
 * initialized the database for the festivals
-* created some user that can access the admin dashboard and 
-* created a file with personal data for the legal-notice that I did not needlessly wanted on github
+* creates a user that can access the admin dashboard and 
+* creates a file with personal data for the legal-notice (I did not needlessly wanted to check that into github)
 
 Start the server via
 ```bash
-APP_SECRET_KEY='123' CONSOLE_LOG='True' python src/forro_festivals/app.py
+ENV='dev' python src/forro_festivals/app.py
 ```
 
 View the app at `localhost:5000`
