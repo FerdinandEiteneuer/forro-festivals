@@ -66,10 +66,19 @@ def ensure_https_scheme(url: str):
         return url
 
 def get_flag(event: Event):
-    if event.country == 'Jupiter':
-        return '🪐'  # Easteregg für kleine Miris
+
+    translations = {
+        'Jupiter': '🪐',  # Easteregg für kleine Miris
+        'España': 'Spain',
+        'Deutschland': 'Germany',
+        'Österreich': 'Austria',
+        'Schweiz': 'Switzerland',
+    }
+
+    country = translations.get(event.country) or event.country
+
     try:
-        return pycountry.countries.lookup(event.country).flag
+        return pycountry.countries.lookup(country).flag
     except LookupError:
         return event.country
 
