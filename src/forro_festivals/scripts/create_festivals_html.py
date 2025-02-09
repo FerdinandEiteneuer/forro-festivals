@@ -66,9 +66,12 @@ def ensure_https_scheme(url: str):
         return url
 
 def get_flag(event: Event):
+    """On the main page, we want to show flags instead of written country names.
+    This function maps each event.country to a flag."""
+    if event.country == 'Jupiter':
+        return '🪐'  # Easteregg für kleine Miris
 
     translations = {
-        'Jupiter': '🪐',  # Easteregg für kleine Miris
         'España': 'Spain',
         'Deutschland': 'Germany',
         'Österreich': 'Austria',
@@ -92,10 +95,11 @@ def format_event(event: Event, include_link=True):
 
     link = ensure_https_scheme(event.link)
     html_link = f'<a href="{link}">{event.link_text}</a>'
+    sold_out = '🛑' if event.sold_out else ''
 
     if include_link:
 
-        festival = f'{event.city} {get_flag(event)} | {start} – {end} | {html_link}'
+        festival = f'{event.city} {get_flag(event)} | {start} – {end} | {html_link} {sold_out}'
         import random
         if random.randint(1, 100) > 70:
             festival += f'{ws(10)}next lot: 23.04 20:00'

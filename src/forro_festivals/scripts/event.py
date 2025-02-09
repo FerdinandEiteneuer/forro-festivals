@@ -1,6 +1,8 @@
 """
 Defines the basic object to hold the information about a Forro Festival
 """
+from typing import Optional
+
 import pydantic
 from pydantic import BaseModel, Field, field_validator, model_validator, ValidationError
 import re
@@ -30,6 +32,7 @@ class Event(BaseModel):
     #date_next_lot: str = None
     #validated_next_lot: bool = False
     #date_
+    sold_out: bool = False
     timestamp: str = Field(default_factory=get_timestamp)  # refers to object creation timestamp
 
     class Config:

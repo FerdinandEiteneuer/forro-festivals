@@ -15,6 +15,7 @@ def test_valid_event():
         link='https://www.example.com',
         link_text='example',
         source='tester',
+        sold_out=True,
     )
 
     assert e.city == 'Cologne'
@@ -26,6 +27,7 @@ def test_valid_event():
     assert e.link == 'https://www.example.com'
     assert e.link_text == 'example'
     assert e.source == 'tester'
+    assert e.sold_out is True
     assert e.start == datetime(year=2024, month=10, day=2)
     assert e.end == datetime(year=2024, month=10, day=6)
 

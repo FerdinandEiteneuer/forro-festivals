@@ -57,6 +57,7 @@ class DataBase:
                     link_text TEXT NOT NULL,
                     validated  BOOLEAN DEFAULT TRUE,  -- indicates whether to show the event, defaults to TRUE
                     source TEXT NOT NULL,  -- who/what created this entry?
+                    sold_out BOOLEAN DEFAULT NULL,  -- NULL: Unknown, TRUE/FALSE means we know the state
                     timestamp TEXT NOT NULL,  -- when was this entry created? 
                     UNIQUE (date_start, date_end, city, country, organizer)  -- prevents duplicates
                     -- Note: If i change the link_text manually in the db, readding the same event from the db 
