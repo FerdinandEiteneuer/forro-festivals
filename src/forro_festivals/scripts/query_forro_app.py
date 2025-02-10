@@ -11,7 +11,7 @@ Concept:
 from datetime import datetime
 import requests
 
-from forro_festivals.models.event import Event
+from forro_festivals.models import Event
 
 
 def get_api_url():

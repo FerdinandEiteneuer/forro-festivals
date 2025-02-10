@@ -1,8 +1,8 @@
-from flask import Flask, render_template
+from flask import render_template
 import json
 
 from forro_festivals.app import build_app
-from forro_festivals.config import static_folder, private_json, root_path_flask
+from forro_festivals.config import static_folder, private_json
 
 def load_private_data(path):
     """Saving Name+Location in a json not checked into the github repository."""

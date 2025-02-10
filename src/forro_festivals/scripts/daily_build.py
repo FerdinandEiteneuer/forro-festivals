@@ -6,10 +6,10 @@ This module is responsible for
 """
 
 from forro_festivals.scripts.update_db_with_forro_app import update_db_with_forro_app
-from forro_festivals.db.db import backup_db
+from forro_festivals import db_api
 
 def daily_build():
-    backup_db()
+    db_api.backup_db()
     update_db_with_forro_app()
 
 if __name__ == '__main__':
