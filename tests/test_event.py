@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from forro_festivals.scripts.event import Event
+from forro_festivals.models.event import Event
 
 
 def test_event_creation():

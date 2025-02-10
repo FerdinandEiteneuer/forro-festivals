@@ -2,9 +2,9 @@ from flask import request, render_template, jsonify, Blueprint
 from pydantic import ValidationError
 
 from forro_festivals import config, logger
-from forro_festivals.scripts.create_festivals_html import format_event, create_festival_data_short
-from forro_festivals.scripts.db_api import add_event_to_db
-from forro_festivals.scripts.event import Event
+from forro_festivals.scripts.create_festivals_html import format_event
+from forro_festivals.db.db_api import add_event_to_db
+from forro_festivals.models.event import Event
 from forro_festivals.scripts.notification import post_event_to_ntfy_channel
 
 bp = Blueprint('add-festival', __name__)

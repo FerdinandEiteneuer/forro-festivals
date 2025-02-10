@@ -3,7 +3,7 @@ from enum import Enum
 import flask_login
 import pydantic
 
-from forro_festivals.scripts.passwords import hash_password
+from forro_festivals.models.base import BaseModel
 
 
 class Permissions(Enum):
@@ -15,8 +15,9 @@ class Permissions(Enum):
         return {perm.value for perm in cls}
 
 
-class User(flask_login.UserMixin, pydantic.BaseModel):
-    id: str
+class User(BaseModel, flask_login.UserMixin):  # Order of classes import for __eq__, since both implement it. I use the one from my BaseModel
+    id: int = -1  # coming from database
+    email: str
     permissions: str
     hashed_pw: str = None
 
@@ -27,25 +28,9 @@ class User(flask_login.UserMixin, pydantic.BaseModel):
             raise ValueError(f'invalid permissions: "{value}". {permission_set=}')
         return value
 
-    def to_tuple(self):
-        return self.id, ','.join(self.permissions), self.hashed_pw
-
-    @classmethod
-    def from_db_row(cls, db_user):
-        usr = dict(db_user)
-        return cls(**usr)
-
     @staticmethod
     def sql_table():
         return 'users'
-
-    @property
-    def sql_insert_fields(self):
-        return tuple(self.model_fields.keys())
-
-    @property
-    def sql_values(self):
-        return tuple(self.model_dump().values())
 
     @staticmethod
     def make_permission_set(permissions):

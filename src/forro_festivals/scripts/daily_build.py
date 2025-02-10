@@ -5,9 +5,8 @@ This module is responsible for
 3. writing them into the database
 """
 
-from forro_festivals.scripts.render_html_pages import render_html_pages
 from forro_festivals.scripts.update_db_with_forro_app import update_db_with_forro_app
-from forro_festivals.scripts.db import backup_db
+from forro_festivals.db.db import backup_db
 
 def daily_build():
     backup_db()

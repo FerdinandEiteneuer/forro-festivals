@@ -2,10 +2,10 @@ from typing import List
 from datetime import datetime
 import shutil
 
-from forro_festivals.scripts.suggestion import Suggestion
-from forro_festivals.scripts.user import User
-from forro_festivals.scripts.db import DataBase
-from forro_festivals.scripts.event import Event
+from forro_festivals.models.suggestion import Suggestion
+from forro_festivals.models.user import User
+from forro_festivals.db.db import DataBase
+from forro_festivals.models.event import Event
 from forro_festivals.config import db_path, db_backup_folder
 
 
@@ -70,8 +70,14 @@ def delete_user(id):
     db = DataBase(db_path)
     return db.delete_by_id(id, User)
 
-def user_exists(id):
-    return id in [user.id for user in get_users()]
+def user_exists(email):
+    return email in [user.email for user in get_users()]
+
+def get_user_by_email(email):
+    users = get_users()
+    user = next((usr for usr in users if usr.email == email), None)
+    return user
+
 
 def migrate(source, dest, migrate_events=True, migrate_users=True, migrate_suggestions=True):
     db_source = DataBase(source)

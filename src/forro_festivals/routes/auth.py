@@ -5,7 +5,7 @@ from flask import Blueprint
 from flask import render_template, request, redirect, url_for, session
 import flask_login
 
-from forro_festivals.scripts import db_api
+from forro_festivals.db import db_api
 from forro_festivals.scripts.logger import logger
 from forro_festivals.scripts.passwords import verify_password
 
@@ -15,15 +15,12 @@ login_manager = flask_login.LoginManager()
 login_manager.login_view = 'auth.login'
 
 
-
 @login_manager.user_loader
 def user_loader(id):
-    logger.info('user loader called')
     return db_api.get_user(id)
 
 @login_manager.request_loader
 def request_loader(request):
-    logger.info('request loader called')
     id = request.form.get('id')
     return db_api.get_user(id)
 
@@ -34,11 +31,12 @@ def login():
             session['next'] = next_url
         return render_template('login.html')
     elif request.method == 'POST':
-        id = request.form['id']
-        user = db_api.get_user(id)
+        logger.debug(f'{dict(request.form)=}')
+        email = request.form['email']
+        user = db_api.get_user_by_email(email)
         if user and verify_password(request.form['password'], user.hashed_pw):
             flask_login.login_user(user)
-            logger.info(f'User {user.id} just logged in')
+            logger.info(f'User {user.email} just logged in')
             if next_url := session.pop('next', None):
                 logger.info(f'redirecting to {next_url=}')
                 return redirect(next_url)

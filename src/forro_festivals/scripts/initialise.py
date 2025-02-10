@@ -1,11 +1,10 @@
-import os
 import json
 
-from forro_festivals.config import data_folder, private_json, users_path, LOG_FOLDER, db_backup_folder
-from forro_festivals.scripts import db_api
-from forro_festivals.scripts.db_api import init_db
+from forro_festivals.config import data_folder, private_json, db_backup_folder
+from forro_festivals.db import db_api
+from forro_festivals.db.db_api import init_db
 from forro_festivals.scripts.passwords import hash_password
-from forro_festivals.scripts.user import User
+from forro_festivals.models.user import User
 
 
 def init_private_data():
@@ -23,7 +22,7 @@ def init_private_data():
 def create_test_user():
     """Creates a first user."""
     user = User(
-        id='admin',
+        email='admin',
         permissions='dashboard',
         hashed_pw=hash_password('admin')
     )

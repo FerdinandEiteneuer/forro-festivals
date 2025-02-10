@@ -7,8 +7,8 @@ from flask import Flask, render_template
 import pycountry
 
 from forro_festivals.config import static_folder, root_path_flask, DateFormats
-from forro_festivals.scripts.event import Event
-from forro_festivals.scripts.db_api import get_events_from_db
+from forro_festivals.models.event import Event
+from forro_festivals.db.db_api import get_events_from_db
 
 
 def create_festivals_html(template='festivals.html'):

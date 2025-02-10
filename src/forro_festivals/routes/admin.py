@@ -5,11 +5,10 @@ from flask import Blueprint
 from flask import render_template, request, redirect, url_for, current_app
 import flask_login
 
-from forro_festivals.scripts.event import Event
+from forro_festivals.models.event import Event
 from forro_festivals import config, logger
 from forro_festivals.routes import auth
-from forro_festivals.scripts.create_festivals_html import create_festivals_html
-from forro_festivals.scripts.db_api import get_events_from_db, get_event_from_db_by_id, update_event_by_id
+from forro_festivals.db.db_api import get_events_from_db, get_event_from_db_by_id, update_event_by_id
 
 bp = Blueprint('admin', __name__)
 
@@ -38,7 +37,7 @@ def update_event():
 
     try:
         event = get_event_from_db_by_id(event_id=event_id)
-        event = Event.merge(event=event, partial_data=event_data)
+        event = Event.merge(event, partial_data=event_data)
         logger.info(f'event after merge:{event}')
         update_event_by_id(event_id=event_id, event=event)
     except Exception as e:

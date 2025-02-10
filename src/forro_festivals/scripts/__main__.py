@@ -12,14 +12,14 @@ from forro_festivals.app import build_app
 from forro_festivals.scripts.cli_utils import validate_event_ids
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.create_legal_notice_html import create_legal_notice_html
-from forro_festivals.scripts.db_api import get_user
 from forro_festivals.scripts.passwords import hash_password
 from forro_festivals.scripts.render_html_pages import render_html_pages
 from forro_festivals.scripts.reload_app import reload_app_by_touch
 from forro_festivals.scripts.update_db_with_forro_app import update_db_with_forro_app
 from forro_festivals.scripts.initialise import initialise
-from forro_festivals.scripts.user import User
-from forro_festivals.scripts import db_api
+from forro_festivals.models import User
+from forro_festivals.db import db_api
+
 
 @click.group()
 def ff():
@@ -94,9 +94,9 @@ def show():
 @db.command()
 @click.option('--source', required=True)
 @click.option('--dest', required=True)
-@click.option('--migrate-events', default=True, required=False, type=bool)
-@click.option('--migrate-users', default=True, required=False, type=bool)
-@click.option('--migrate-suggestions', default=True, required=False, type=bool)
+@click.option('--migrate-events', is_flag=True)
+@click.option('--migrate-users', is_flag=True)
+@click.option('--migrate-suggestions', is_flag=True)
 def migrate(source, dest, migrate_events, migrate_users, migrate_suggestions):
     """
     Migrates events and users from one database to another.
@@ -112,13 +112,13 @@ def users():
     pass
 
 @users.command()
-@click.option('--id', required=True)
+@click.option('--email', required=True)
 @click.option('--password', required=True)
 @click.option('--permissions', required=True)
-def create(id, password, permissions):
+def create(email, password, permissions):
     """Creates a user."""
     user = User(
-        id=id,
+        email=email,
         permissions=permissions,
         hashed_pw=hash_password(password),
     )
@@ -129,7 +129,7 @@ def create(id, password, permissions):
 @click.option('--permissions', required=True, default=None)
 def update(id, permissions):
     """Updates permissions."""
-    user = get_user(id)
+    user = db_api.get_user(id)
     if not user:
         click.echo(f"User {id} does not exist")
 
@@ -141,7 +141,7 @@ def update(id, permissions):
 def show():
     """Prints all users."""
     for user in db_api.get_users():
-        print(f'{user.id} {user.permission_set}')
+        print(f'id={user.id}  email={user.email}  permissions={user.permission_set}')
 
 @users.command()
 @click.option('--id', required=True)

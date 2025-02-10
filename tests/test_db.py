@@ -3,10 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
-from forro_festivals.scripts.suggestion import Suggestion
-from forro_festivals.scripts.user import User, Permissions
-from forro_festivals.scripts.db import DataBase
-from forro_festivals.scripts.event import Event
+from forro_festivals.models import Suggestion, User, Permissions
+from forro_festivals.db import DataBase
+from forro_festivals.models.event import Event
 import tempfile
 
 # Note: Yes, tests are not clean atm since individual scenarios are not seperated at all.
@@ -76,7 +75,7 @@ def test_db(db):
     assert events[2] == event_2
 
     partial_data = {'city': 'Changed City'}
-    event_0 = Event.merge(event=event_0, partial_data=partial_data)
+    event_0 = Event.merge(obj=event_0, partial_data=partial_data)
     db.update_by_id(id=1, obj=event_0)
 
     events = db.get_all_events()
@@ -101,32 +100,32 @@ def permission_mock():
 
 def test_user_db(db, permission_mock):
     user = User(
-        id='testuser@bla.com',
+        email='testuser@bla.com',
         permissions='a, b',
         hashed_pw='123',
     )
 
     db.insert(user)
+    db_user = db.get_by_id(1, User)
+    assert user == db_user
 
     db_users = db.get_all(User)
-    db_user = db.get_by_id('testuser@bla.com', User)
     assert user == db_users[0]
-    assert user == db_user
+
     assert len(db_users) == 1
 
     updated_user = User(
-        id='testuser@bla.com',
+        email='testuser@bla_zwei.com',
         permissions='a',  # remove a permission in comparison to 'user'
         hashed_pw='123',
     )
-
-    db.update_by_id(updated_user.id, updated_user)
-    db_user = db.get_by_id('testuser@bla.com', User)
+    db.update_by_id(1, updated_user)
+    db_user = db.get_by_id(1, User)
     assert db_user.permissions == 'a'
-
-    assert db.delete_by_id('testuser@bla.com', User) is True
+    assert db_user.email == 'testuser@bla_zwei.com'
+    assert db.delete_by_id(1, User) is True
     assert len(db.get_all(User)) == 0
-    assert db.delete_by_id('not-existent', User) is False
+    assert db.delete_by_id(1, User) is False
 
 def test_suggestion_db(db):
     suggestion = Suggestion(

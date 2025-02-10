@@ -6,7 +6,7 @@ for an event which was manually added by a user.
 import requests
 import json
 
-from forro_festivals.scripts.event import Event
+from forro_festivals.models.event import Event
 
 def event_to_message(event: Event):
     return f'Name: {event.link_text}\n' \

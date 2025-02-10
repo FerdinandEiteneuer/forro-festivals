@@ -12,9 +12,9 @@ from contextlib import contextmanager
 from typing import List, Optional
 import logging
 
-from forro_festivals.scripts.suggestion import Suggestion
-from forro_festivals.scripts.user import User
-from forro_festivals.scripts.event import Event
+from forro_festivals.models.suggestion import Suggestion
+from forro_festivals.models.user import User
+from forro_festivals.models.event import Event
 
 DB_obj = User | Event | Suggestion
 DB_type = type(User) | type(Event) | type(Suggestion)
@@ -73,9 +73,11 @@ class DataBase:
         with db_ops(self.path) as cursor:
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users (
-                    id TEXT UNIQUE NOT NULL,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email TEXT NOT NULL,
                     permissions TEXT NOT NULL,
-                    hashed_pw TEXT NOT NULL
+                    hashed_pw TEXT NOT NULL,
+                    UNIQUE (email)
                 );
             """
             )
@@ -92,7 +94,7 @@ class DataBase:
             """
             )
 
-    def get_by_id(self, id, cls: DB_type) -> Optional[DB_obj]:
+    def get_by_id(self, id: int , cls: DB_type) -> Optional[DB_obj]:
         with db_ops(self.path) as cursor:
             cursor.execute(f'SELECT * FROM {cls.sql_table()} WHERE id = ?', (id,))
             row = cursor.fetchone()
@@ -101,7 +103,7 @@ class DataBase:
         else:
             return None
 
-    def delete_by_id(self, id, cls: DB_type) -> bool:
+    def delete_by_id(self, id: int, cls: DB_type) -> bool:
         with db_ops(self.path) as cursor:
             cursor.execute(f'DELETE FROM {cls.sql_table()} WHERE id = ?', (id, ))
             success = not cursor.rowcount == 0
