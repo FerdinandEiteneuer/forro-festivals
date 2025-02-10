@@ -91,6 +91,18 @@ def show():
     for event in db_api.get_events_from_db():
         print(event)
 
+@db.command()
+@click.option('--source', required=True)
+@click.option('--dest', required=True)
+@click.option('--migrate-events', default=True, required=False, type=bool)
+@click.option('--migrate-users', default=True, required=False, type=bool)
+@click.option('--migrate-suggestions', default=True, required=False, type=bool)
+def migrate(source, dest, migrate_events, migrate_users, migrate_suggestions):
+    """
+    Migrates events and users from one database to another.
+    """
+    db_api.migrate(source, dest, migrate_events, migrate_users, migrate_suggestions)
+
 #########
 # USERS #
 #########

@@ -56,6 +56,11 @@
             background-color: #2e796b;
         }
 
+        .soldout-button {
+            background-color: white;
+            color: black;
+        }
+
         /* Adjust input widths */
         input[type="text"], input[type="date"], select {
             width: 100%; /* Ensures inputs fill the entire width of the cell */
@@ -93,8 +98,16 @@
         }
 
         th:nth-child(8), td:nth-child(8) {
-            width: 200px; /* Set a reasonable width for the Actions column */
+            width: 60px; /* Set a reasonable width for the Sold-Out column */
         }
+
+
+        th:nth-child(9), td:nth-child(9) {
+            width: 140px; /* Set a reasonable width for the Actions column */
+        }
+
+
+
 
     </style>
 
@@ -108,6 +121,7 @@
                 <th>End Date</th>
                 <th>Link</th>
                 <th>Validated</th>
+                <th>Sold Out</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -146,6 +160,18 @@
                         </button>
                     </td>
                     <td>
+                        <!-- Hidden input to store the validated state. The form does not transmit buttons, so we store the value of the button here   -->
+                        <input type="hidden" name="sold_out|{{ event.id }}" id="sold_out_{{ event.id }}" value="{{ event.sold_out }}">
+
+                        <button type="button" class="soldout-button" onclick="toggleSoldOut({{ event.id }}, this)" name="sold_out_{{ event.id }}">
+                            {% if event.sold_out %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </button>
+                    </td>
+                    <td>
                         <button type="submit" class="update-button">Update DB 💾</button>
                     </td>
                 </form>
@@ -163,12 +189,17 @@
             if (button.innerText === 'Yes') {
                 button.innerText = 'No'; // Change to "No"
                 button.style.backgroundColor = '#f44336'; // Red color for "No"
-                document.getElementById('validated_' + eventId).value = '0'; // Set hidden input to '0' (No)
+                document.getElementById('validated_' + eventId).value = 'False'; // Set hidden input to '0' (No)
             } else {
                 button.innerText = 'Yes'; // Change to "Yes"
                 button.style.backgroundColor = '#4CAF50'; // Green color for "Yes"
-                document.getElementById('validated_' + eventId).value = '1'; // Set hidden input to '1' (Yes)
+                document.getElementById('validated_' + eventId).value = 'True'; // Set hidden input to '1' (Yes)
             }
+
+            //let isYes = button.innerText === 'Yes';
+            //button.innerText = isYes ? 'No' : 'Yes';
+            //document.getElementById('validated_' + eventId).value = isYes ? '0' : '1'
+
 
             // Find the form related to this row (closest parent form element)
             let form = button.closest('form');
@@ -177,12 +208,43 @@
             let input = document.createElement('input');
             input.type = 'hidden';
             input.name = 'validated_' + eventId; // Use event ID for each row's unique field
-            input.value = button.innerText === 'Yes' ? '1' : '0'; // Send '1' for Yes, '0' for No
+            input.value = button.innerText === 'Yes' ? 'True' : 'False'; // Send '1' for Yes, '0' for No
 
             // Append the hidden input to the form to send with the request
             form.appendChild(input);
         }
     </script>
 
+
+        <script>
+        // This script is there so that you can click the Button and Yes and No swap
+        function toggleSoldOut(eventId, button) {
+            // Check if the button text is "Yes" or "No" and toggle
+            if (button.innerText === 'Yes') {
+                button.innerText = 'No'; // Change to "No"
+                document.getElementById('sold_out_' + eventId).value = 'False'; // Set hidden input to '0' (No)
+            } else {
+                button.innerText = 'Yes'; // Change to "Yes"
+                document.getElementById('sold_out_' + eventId).value = 'True'; // Set hidden input to '1' (Yes)
+            }
+
+            //let isYes = button.innerText === 'Yes';
+            //button.innerText = isYes ? 'No' : 'Yes';
+            //document.getElementById('validated_' + eventId).value = isYes ? '0' : '1'
+
+
+            // Find the form related to this row (closest parent form element)
+            let form = button.closest('form');
+
+            // Create a hidden input to send the validation state
+            let input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'sold_out_' + eventId; // Use event ID for each row's unique field
+            input.value = button.innerText === 'Yes' ? 'True' : 'False'; // Send '1' for Yes, '0' for No
+
+            // Append the hidden input to the form to send with the request
+            form.appendChild(input);
+        }
+    </script>
 
 {% endblock %}

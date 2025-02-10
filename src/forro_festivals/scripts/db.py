@@ -12,9 +12,12 @@ from contextlib import contextmanager
 from typing import List, Optional
 import logging
 
+from forro_festivals.scripts.suggestion import Suggestion
 from forro_festivals.scripts.user import User
 from forro_festivals.scripts.event import Event
 
+DB_obj = User | Event | Suggestion
+DB_type = type(User) | type(Event) | type(Suggestion)
 
 @contextmanager
 def db_ops(path):
@@ -30,6 +33,8 @@ def db_ops(path):
         conn.commit()
     finally:
         conn.close()
+
+
 
 class DataBase:
     def __init__(self, path):
@@ -75,7 +80,19 @@ class DataBase:
             """
             )
 
-    def get_by_id(self, id, cls) -> Optional['cls']:
+        with db_ops(self.path) as cursor:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS suggestions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    event_id INTEGER NOT NULL,
+                    date_next_lot TEXT,
+                    sold_out TEXT,
+                    applied BOOLEAN DEFAULT FALSE
+                );
+            """
+            )
+
+    def get_by_id(self, id, cls: DB_type) -> Optional[DB_obj]:
         with db_ops(self.path) as cursor:
             cursor.execute(f'SELECT * FROM {cls.sql_table()} WHERE id = ?', (id,))
             row = cursor.fetchone()
@@ -84,7 +101,7 @@ class DataBase:
         else:
             return None
 
-    def delete_by_id(self, id, cls: type(User) | type(Event)) -> bool:
+    def delete_by_id(self, id, cls: DB_type) -> bool:
         with db_ops(self.path) as cursor:
             cursor.execute(f'DELETE FROM {cls.sql_table()} WHERE id = ?', (id, ))
             success = not cursor.rowcount == 0
@@ -92,7 +109,7 @@ class DataBase:
                 print(f"No row found with the given {id=}")
             return success
 
-    def insert(self, obj: User | Event):
+    def insert(self, obj: DB_obj):
         cls = type(obj)
         try:
             cls(**obj.model_dump())
@@ -110,7 +127,7 @@ class DataBase:
             # In case of duplicate, this returns 0. In case a valid entry is submitted, returns the id
             return cursor.lastrowid
 
-    def get_all(self, cls: type(User) | type(Event)):
+    def get_all(self, cls: DB_type) -> List[DB_obj]:
         with db_ops(self.path) as cursor:
             cursor.execute(f'SELECT * FROM {cls.sql_table()}')
             db_objects = cursor.fetchall()
@@ -119,7 +136,7 @@ class DataBase:
             objects.append(cls.from_db_row(db_object))
         return objects
 
-    def update_by_id(self, id, obj: User | Event):
+    def update_by_id(self, id, obj: DB_obj):
         with db_ops(self.path) as cursor:
             fields = ', '.join(f'{field} = ?' for field in obj.sql_insert_fields)
             update = f'''
@@ -138,7 +155,7 @@ class DataBase:
             deletions += self.delete_by_id(event_id, cls=Event)
         return deletions
 
-    def get_all_events(self) -> List[dict]:
+    def get_all_events(self) -> List[Event]:
         return self.get_all(Event)
 
     def get_event_by_id(self, event_id: int) -> Optional[Event]:

@@ -34,11 +34,12 @@ def update_event():
         logger.info(f'GET: {dict(request.args)=}')
         event_data = dict(request.args)
 
-    event_id = str(event_data.pop('id'))
+    event_id = int(event_data.pop('id'))
 
     try:
         event = get_event_from_db_by_id(event_id=event_id)
         event = Event.merge(event=event, partial_data=event_data)
+        logger.info(f'event after merge:{event}')
         update_event_by_id(event_id=event_id, event=event)
     except Exception as e:
         logger.error(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')

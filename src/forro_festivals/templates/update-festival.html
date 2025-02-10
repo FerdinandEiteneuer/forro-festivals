@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Suggest Date for next Ticket Lot</h1>
+
+     <!-- Include Flatpickr CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <p>
+        Do you know when the next ticket lot of a festival gets sold?
+    </p>
+
+    <div id="suggestion-form" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        <!-- Dropdown for selecting the event (shared between forms) -->
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <label for="festival">Festival:</label>
+            <select name="event_id" id="festival">
+                <option value="" selected="selected" disabled>-- Select a festival --</option>
+                {% for event_id, festival in festivals_short.items() %}
+                    <option value="{{ event_id }}">{{ festival }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Form for submitting a new date -->
+        <form method="POST" action="{{ url_for('update-festival.update_festival') }}">
+            <input type="hidden" name="event_id" id="hidden-event-id-date">
+            <input type="hidden" name="sold_out" value="False">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <label for="datetime">Next lot:</label>
+                                <!-- Date input field with clear button -->
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" name="datetime" id="datetime" required placeholder="Select date & time">
+                    <span id="clear-date" style="
+                        position: absolute;
+                        right: 10px;
+                        cursor: pointer;
+                        font-size: 18px;
+                        color: gray;
+                        display: none;">❌</span>
+                </div>
+                <button type="submit" id="send-date-btn" disabled>Send date! 🚀</button>
+            </div>
+        </form>
+
+        <!-- Form for marking tickets as sold out -->
+        <form method="POST" action="{{ url_for('update-festival.update_festival') }}">
+            <input type="hidden" name="event_id" id="hidden-event-id-sold-out">
+            <input type="hidden" name="sold_out" value="True">
+            <input type="hidden" name="datetime" value="None">
+            <button type="submit" id="sold-out-btn" disabled>The Tickets are sold out 😔!</button>
+        </form>
+    </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Get elements
+    const festivalSelect = document.getElementById("festival");
+    const dateInput = document.getElementById("datetime");
+    const sendDateBtn = document.getElementById("send-date-btn");
+    const soldOutBtn = document.getElementById("sold-out-btn");
+    const hiddenEventIdDate = document.getElementById("hidden-event-id-date");
+    const hiddenEventIdSoldOut = document.getElementById("hidden-event-id-sold-out");
+    const clearDateBtn = document.getElementById("clear-date");
+
+    // Initialize Flatpickr and store the instance
+    const datePicker = flatpickr("#datetime", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true,
+        altInput: true,
+        altFormat: "F j, H:i, Y",
+    });
+
+    // Function to update button states
+    function updateButtons() {
+        const selectedEvent = festivalSelect.value;
+        sendDateBtn.disabled = !selectedEvent || dateInput.value.trim() === "";
+        soldOutBtn.disabled = !selectedEvent || dateInput.value.trim() !== "";
+        hiddenEventIdDate.value = selectedEvent;
+        hiddenEventIdSoldOut.value = selectedEvent;
+    }
+
+    // Function to show/hide the clear button
+    function toggleClearButton() {
+        clearDateBtn.style.display = dateInput.value ? "block" : "none";
+    }
+
+    // Event listener for clearing the date input
+    clearDateBtn.addEventListener("click", function () {
+        datePicker.clear();  // Properly reset Flatpickr input
+        toggleClearButton();
+        dateInput.dispatchEvent(new Event("input")); // Ensure UI updates
+    });
+
+    // Event listeners
+    festivalSelect.addEventListener("change", updateButtons);
+    dateInput.addEventListener("input", updateButtons);
+    dateInput.addEventListener("input", toggleClearButton);
+});
+    </script>
+
+
+
+{% endblock %}

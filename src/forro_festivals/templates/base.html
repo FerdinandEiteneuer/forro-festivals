@@ -48,11 +48,13 @@
     <!-- Navigation bar -->
     <hr>
     <nav>
-        <a href="/">Festivals</a> |
-        <a href="/about">About</a> |
-        <a href="/add-festival">Add Festival</a> |
-        <a href="/update-next-lot">Add Ticket Sell Date</a> |
-        <a href="/legal-notice">Legal Notice</a>
+         <a href="/">Festivals</a>
+        | <a href="/about">About</a>
+        | <a href="/add-festival">Add Festival</a>
+        {% if current_user and current_user.is_authenticated %}
+            | <a href="/update-festival">Update Festival Status</a>
+        {% endif %}
+            | <a href="/legal-notice">Legal Notice</a>
         {% if current_user and current_user.is_authenticated %}
             | <a href="/dashboard">Dashboard</a>
         {% endif %}

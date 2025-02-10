@@ -2,6 +2,7 @@ from typing import List
 from datetime import datetime
 import shutil
 
+from forro_festivals.scripts.suggestion import Suggestion
 from forro_festivals.scripts.user import User
 from forro_festivals.scripts.db import DataBase
 from forro_festivals.scripts.event import Event
@@ -71,3 +72,14 @@ def delete_user(id):
 
 def user_exists(id):
     return id in [user.id for user in get_users()]
+
+def migrate(source, dest, migrate_events=True, migrate_users=True, migrate_suggestions=True):
+    db_source = DataBase(source)
+    db_dest = DataBase(dest)
+
+    entries = db_source.get_all(Event) if migrate_events else []
+    entries += db_source.get_all(User) if migrate_users else []
+    entries += db_source.get_all(Suggestion) if migrate_suggestions else []
+
+    for entry in entries:
+        db_dest.insert(entry)

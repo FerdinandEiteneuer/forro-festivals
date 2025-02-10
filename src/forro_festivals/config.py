@@ -41,5 +41,6 @@ class DateFormats:
     dm = '%d.%m'  # dd.mm
     ymd = '%Y-%m-%d'  # yyyy-mm-dd
     ymd_hms = '%Y-%m-%d-%H-%M-%S'  # yyyy-mm-dd-hh-mm-ss'
+    ymd_hm = '%Y-%m-%d-%H-%M'
     bdy = '%B %d, %Y'  # August 12, 2025
 

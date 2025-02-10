@@ -5,7 +5,7 @@ import pytest
 from forro_festivals.scripts.event import Event
 
 
-def test_valid_event():
+def test_event_creation():
     e = Event(
         date_start='2024-10-02',
         date_end='2024-10-06',
@@ -15,7 +15,8 @@ def test_valid_event():
         link='https://www.example.com',
         link_text='example',
         source='tester',
-        sold_out=True,
+        sold_out=False,
+        validated=True,
     )
 
     assert e.city == 'Cologne'
@@ -27,7 +28,9 @@ def test_valid_event():
     assert e.link == 'https://www.example.com'
     assert e.link_text == 'example'
     assert e.source == 'tester'
-    assert e.sold_out is True
+    assert e.sold_out is False
+    assert e.validated is True
+    # properties
     assert e.start == datetime(year=2024, month=10, day=2)
     assert e.end == datetime(year=2024, month=10, day=6)
 
