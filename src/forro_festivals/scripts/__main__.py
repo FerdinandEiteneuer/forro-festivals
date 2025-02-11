@@ -126,7 +126,7 @@ def create(email, password, permissions):
 
 @users.command()
 @click.option('--email', required=True)
-@click.option('--permissions', required=True, default=None)
+@click.option('--permissions', required=False, default=None)
 @click.option('--hashed_pw', required=False, default=None)
 def update(email, permissions, hashed_pw):
     """Updates permissions."""

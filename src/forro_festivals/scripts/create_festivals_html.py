@@ -100,11 +100,7 @@ def format_event(event: Event, include_link=True):
     sold_out = '🛑' if event.sold_out else ''
 
     if include_link:
-
         festival = f'{event.city} {get_flag(event)} | {start} – {end} | {html_link} {sold_out}'
-        import random
-        if random.randint(1, 100) > 70:
-            festival += f'{ws(10)}next lot: 23.04 20:00'
     else:
         festival = f'{event.city} {get_flag(event)}, {start} – {end}'
 
