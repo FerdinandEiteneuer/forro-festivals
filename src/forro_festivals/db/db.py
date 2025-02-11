@@ -147,6 +147,10 @@ class DataBase:
                 WHERE id = ?
             '''
             cursor.execute(update, obj.sql_values + (id, ))
+            if cursor.rowcount > 0:
+                print("Update successful!")
+            else:
+                print("No rows were updated.")
 
     #### EVENT ####
     def delete_events_by_ids(self, event_ids: List[int] | int):

@@ -31,9 +31,9 @@ def login():
             session['next'] = next_url
         return render_template('login.html')
     elif request.method == 'POST':
-        logger.debug(f'{dict(request.form)=}')
         email = request.form['email']
         user = db_api.get_user_by_email(email)
+        logger.debug(f'user {email} is trying to login')
         if user and verify_password(request.form['password'], user.hashed_pw):
             flask_login.login_user(user)
             logger.info(f'User {user.email} just logged in')

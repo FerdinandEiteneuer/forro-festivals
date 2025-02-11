@@ -135,10 +135,13 @@ def update(email, permissions, password):
         click.echo(f"User {email} does not exist")
         return
 
-    new_permissions = permissions or user.permissions
-    new_hashed_pw = hash_password(password) if password else user.hashed_pw
+    update_data = {}
+    if permissions:
+        update_data['permissions'] = permissions
+    if password:
+        update_data['hashed_pw'] = hash_password(password)
 
-    user = User(email=email, hashed_pw=new_hashed_pw, permissions=new_permissions)
+    user = User.merge(user, partial_data=update_data)
     db_api.update_user(user)
 
 
