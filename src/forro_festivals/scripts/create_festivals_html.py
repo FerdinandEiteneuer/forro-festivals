@@ -98,12 +98,12 @@ def format_event(event: Event, include_link=True):
     link = ensure_https_scheme(event.link)
     html_link = f'<a href="{link}">{event.link_text}</a>'
     sold_out = '🛑' if event.sold_out else ''
+    ticket = '🎫'
 
     if include_link:
         festival = f'{event.city} {get_flag(event)} | {start} – {end} | {html_link} {sold_out}'
     else:
         festival = f'{event.city} {get_flag(event)}, {start} – {end}'
-
 
     return festival
 
