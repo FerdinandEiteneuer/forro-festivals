@@ -54,52 +54,54 @@
         </form>
     </div>
 
+
+
     <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Get elements
-    const festivalSelect = document.getElementById("festival");
-    const dateInput = document.getElementById("datetime");
-    const sendDateBtn = document.getElementById("send-date-btn");
-    const soldOutBtn = document.getElementById("sold-out-btn");
-    const hiddenEventIdDate = document.getElementById("hidden-event-id-date");
-    const hiddenEventIdSoldOut = document.getElementById("hidden-event-id-sold-out");
-    const clearDateBtn = document.getElementById("clear-date");
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get elements
+            const festivalSelect = document.getElementById("festival");
+            const dateInput = document.getElementById("datetime");
+            const sendDateBtn = document.getElementById("send-date-btn");
+            const soldOutBtn = document.getElementById("sold-out-btn");
+            const hiddenEventIdDate = document.getElementById("hidden-event-id-date");
+            const hiddenEventIdSoldOut = document.getElementById("hidden-event-id-sold-out");
+            const clearDateBtn = document.getElementById("clear-date");
 
-    // Initialize Flatpickr and store the instance
-    const datePicker = flatpickr("#datetime", {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i",
-        time_24hr: true,
-        altInput: true,
-        altFormat: "F j, H:i, Y",
-    });
+            // Initialize Flatpickr and store the instance
+            const datePicker = flatpickr("#datetime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+                altInput: true,
+                altFormat: "F j, H:i, Y",
+            });
 
-    // Function to update button states
-    function updateButtons() {
-        const selectedEvent = festivalSelect.value;
-        sendDateBtn.disabled = !selectedEvent || dateInput.value.trim() === "";
-        soldOutBtn.disabled = !selectedEvent || dateInput.value.trim() !== "";
-        hiddenEventIdDate.value = selectedEvent;
-        hiddenEventIdSoldOut.value = selectedEvent;
-    }
+            // Function to update button states
+            function updateButtons() {
+                const selectedEvent = festivalSelect.value;
+                sendDateBtn.disabled = !selectedEvent || dateInput.value.trim() === "";
+                soldOutBtn.disabled = !selectedEvent || dateInput.value.trim() !== "";
+                hiddenEventIdDate.value = selectedEvent;
+                hiddenEventIdSoldOut.value = selectedEvent;
+            }
 
-    // Function to show/hide the clear button
-    function toggleClearButton() {
-        clearDateBtn.style.display = dateInput.value ? "block" : "none";
-    }
+            // Function to show/hide the clear button
+            function toggleClearButton() {
+                clearDateBtn.style.display = dateInput.value ? "block" : "none";
+            }
 
-    // Event listener for clearing the date input
-    clearDateBtn.addEventListener("click", function () {
-        datePicker.clear();  // Properly reset Flatpickr input
-        toggleClearButton();
-        dateInput.dispatchEvent(new Event("input")); // Ensure UI updates
-    });
+            // Event listener for clearing the date input
+            clearDateBtn.addEventListener("click", function () {
+                datePicker.clear();  // Properly reset Flatpickr input
+                toggleClearButton();
+                dateInput.dispatchEvent(new Event("input")); // Ensure UI updates
+            });
 
-    // Event listeners
-    festivalSelect.addEventListener("change", updateButtons);
-    dateInput.addEventListener("input", updateButtons);
-    dateInput.addEventListener("input", toggleClearButton);
-});
+            // Event listeners
+            festivalSelect.addEventListener("change", updateButtons);
+            dateInput.addEventListener("input", updateButtons);
+            dateInput.addEventListener("input", toggleClearButton);
+        });
     </script>
 
 
