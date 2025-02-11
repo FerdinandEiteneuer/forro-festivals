@@ -127,16 +127,17 @@ def create(email, password, permissions):
 @users.command()
 @click.option('--email', required=True)
 @click.option('--permissions', required=False, default=None)
-@click.option('--hashed_pw', required=False, default=None)
-def update(email, permissions, hashed_pw):
-    """Updates permissions."""
+@click.option('--password', required=False, default=None)
+def update(email, permissions, password):
+    """Updates permissions or password."""
     user = db_api.get_user_by_email(email)
     if not user:
         click.echo(f"User {email} does not exist")
         return
 
     new_permissions = permissions or user.permissions
-    new_hashed_pw = hashed_pw or user.hashed_pw
+    new_hashed_pw = hash_password(password) if password else user.hashed_pw
+
     user = User(email=email, hashed_pw=new_hashed_pw, permissions=new_permissions)
     db_api.update_user(user)
 
