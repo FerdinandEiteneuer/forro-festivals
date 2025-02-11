@@ -6,8 +6,8 @@ from flask import render_template, request, redirect, url_for, session
 import flask_login
 
 from forro_festivals.db import db_api
-from forro_festivals.scripts.logger import logger
-from forro_festivals.scripts.passwords import verify_password
+from forro_festivals import logger
+from forro_festivals.misc.passwords import verify_password
 
 bp = Blueprint('auth', __name__)
 

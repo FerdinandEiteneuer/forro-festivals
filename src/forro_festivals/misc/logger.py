@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from forro_festivals.scripts.notification import post_error_to_ntfy_channel
+from forro_festivals.misc.notification import post_error_to_ntfy_channel
 from forro_festivals.config import LOG_CONSOLE, LOG_FOLDER, NTFY_TOPIC
 
 

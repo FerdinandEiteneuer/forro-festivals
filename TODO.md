@@ -5,7 +5,6 @@
 Need to design way of adding this information to the page
 * clean up script folder -> split into reasonable folders
 * Docstrings at the begging of each module
-* make id in User database the normal counter for db insertions and instead add email field
 * backup system does not work anymore on pythonanywhere? nothing of february is there
 * why does forro-app query take 60 seconds?
 * next lot thing randomly appearing... oops

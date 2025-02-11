@@ -12,7 +12,7 @@ from forro_festivals.app import build_app
 from forro_festivals.scripts.cli_utils import validate_event_ids
 from forro_festivals.scripts.create_festivals_html import create_festivals_html
 from forro_festivals.scripts.create_legal_notice_html import create_legal_notice_html
-from forro_festivals.scripts.passwords import hash_password
+from forro_festivals.misc.passwords import hash_password
 from forro_festivals.scripts.render_html_pages import render_html_pages
 from forro_festivals.scripts.reload_app import reload_app_by_touch
 from forro_festivals.scripts.update_db_with_forro_app import update_db_with_forro_app
