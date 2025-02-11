@@ -29,10 +29,10 @@
             <input type="hidden" name="event_id" id="hidden-event-id-date">
             <input type="hidden" name="sold_out" value="False">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                <label for="datetime">Next lot:</label>
+                <label for="date_next_lot">Next lot:</label>
                                 <!-- Date input field with clear button -->
                 <div style="position: relative; display: flex; align-items: center;">
-                    <input type="text" name="datetime" id="datetime" required placeholder="Select date & time">
+                    <input type="text" name="date_next_lot" id="date_next_lot" required placeholder="Select date & time">
                     <span id="clear-date" style="
                         position: absolute;
                         right: 10px;
@@ -49,18 +49,31 @@
         <form method="POST" action="{{ url_for('update-festival.update_festival') }}">
             <input type="hidden" name="event_id" id="hidden-event-id-sold-out">
             <input type="hidden" name="sold_out" value="True">
-            <input type="hidden" name="datetime" value="None">
+            <input type="hidden" name="date_next_lot" value="None">
             <button type="submit" id="sold-out-btn" disabled>The Tickets are sold out 😔!</button>
         </form>
     </div>
-
-
+    <br>
+    <div id="message-boxes">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <strong>{{ 'Success!' if category == 'success' else 'Error!' }}</strong> {{ message }}
+                        <!-- Close button (X) -->
+                        <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <br>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Get elements
             const festivalSelect = document.getElementById("festival");
-            const dateInput = document.getElementById("datetime");
+            const dateInput = document.getElementById("date_next_lot");
             const sendDateBtn = document.getElementById("send-date-btn");
             const soldOutBtn = document.getElementById("sold-out-btn");
             const hiddenEventIdDate = document.getElementById("hidden-event-id-date");
@@ -68,7 +81,7 @@
             const clearDateBtn = document.getElementById("clear-date");
 
             // Initialize Flatpickr and store the instance
-            const datePicker = flatpickr("#datetime", {
+            const datePicker = flatpickr("#date_next_lot", {
                 enableTime: true,
                 dateFormat: "Y-m-d H:i",
                 time_24hr: true,

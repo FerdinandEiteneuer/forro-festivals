@@ -157,6 +157,20 @@ def delete(id):
     """Deletes a user by id."""
     db_api.delete_user(id)
 
+###############
+# SUGGESTIONS #
+###############
+@click.group()
+def suggestions():
+    """Suggestion related commands."""
+    pass
+
+@suggestions.command()
+def show():
+    suggestions = db_api.get_suggestions()
+    for sugg in suggestions:
+        print(sugg)
+
 
 ########
 # HTML #
@@ -185,6 +199,7 @@ ff.add_command(app)
 ff.add_command(db)
 ff.add_command(html)
 ff.add_command(users)
+ff.add_command(suggestions)
 
 if __name__ == '__main__':
     ff()

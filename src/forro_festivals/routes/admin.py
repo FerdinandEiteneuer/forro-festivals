@@ -5,10 +5,11 @@ from flask import Blueprint
 from flask import render_template, request, redirect, url_for, current_app
 import flask_login
 
+from forro_festivals.models import Suggestion
 from forro_festivals.models.event import Event
 from forro_festivals import config, logger
 from forro_festivals.routes import auth
-from forro_festivals.db.db_api import get_events_from_db, get_event_from_db_by_id, update_event_by_id
+from forro_festivals.db import db_api
 
 bp = Blueprint('admin', __name__)
 
@@ -16,9 +17,9 @@ bp = Blueprint('admin', __name__)
 @bp.route('/dashboard')
 @flask_login.login_required
 def dashboard():
-    events = get_events_from_db()
-    event_list = [event.model_dump() for event in events]
-    return render_template('dashboard.html', events=event_list)
+    events = [event.model_dump() for event in db_api.get_all(Event)]
+    suggestions = [sugg.model_dump() for sugg in db_api.get_all(Suggestion)]
+    return render_template('dashboard.html', events=events, suggestions=suggestions)
 
 @bp.route('/update-event', methods=['GET', 'POST'])
 @flask_login.login_required
@@ -36,10 +37,10 @@ def update_event():
     event_id = int(event_data.pop('id'))
 
     try:
-        event = get_event_from_db_by_id(event_id=event_id)
+        event = db_api.get_event_from_db_by_id(event_id=event_id)
         event = Event.merge(event, partial_data=event_data)
         logger.info(f'event after merge:{event}')
-        update_event_by_id(event_id=event_id, event=event)
+        db_api.update_event_by_id(event_id=event_id, event=event)
     except Exception as e:
         logger.error(f'Exception during update_event: {e}. {event_id=}, {event_data=}, {event=}')
 

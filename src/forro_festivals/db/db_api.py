@@ -78,6 +78,20 @@ def get_user_by_email(email):
     user = next((usr for usr in users if usr.email == email), None)
     return user
 
+def get_suggestions():
+    db = DataBase(db_path)
+    suggestions = db.get_all(Suggestion)
+    return suggestions
+
+
+def insert(obj):
+    db = DataBase(db_path)
+    db.insert(obj)
+
+def get_all(cls):
+    db = DataBase(db_path)
+    return db.get_all(cls)
+
 
 def migrate(source, dest, migrate_events=True, migrate_users=True, migrate_suggestions=True):
     db_source = DataBase(source)

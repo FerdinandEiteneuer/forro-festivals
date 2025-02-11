@@ -22,9 +22,9 @@ def transform_date(date, fmt_from, fmt_to):
 class Suggestion(BaseModel):
     id: int = -1  # coming from db
     event_id: int = -1  # this is the event_id which this update suggestion corresponds to
-    date_next_lot: str
-    sold_out: bool
-    applied: bool
+    date_next_lot: Optional[str] = None
+    sold_out: Optional[bool] = False
+    applied: bool = False
 
     @staticmethod
     def sql_table():
@@ -34,42 +34,16 @@ class Suggestion(BaseModel):
     def next_lot(self):
         return datetime.strptime(self.date_next_lot, DateFormats.ymd)
 
-    #@classmethod
-    #def from_request(cls, request):
-    #    default_kwargs = dict(
-    #        organizer='None',
-    #        validated=False,
-    #        source='add-festival',
-    #    )
-    #    kwargs = {
-    #        key: value
-    #        for key, value in request.form.items()
-    #        if value != ''
-    #    }
-    #    kwargs = {**default_kwargs, **kwargs}
-    #    return Suggestion(**kwargs)
+    @classmethod
+    def from_request(cls, request):
+        kwargs = dict(request.form)
+        return cls(
+            event_id=int(kwargs['event_id']),
+            sold_out=kwargs['sold_out'] == 'True',
+            date_next_lot=kwargs['date_next_lot'] if kwargs['date_next_lot'] != 'None' else None,
+            applied=False
+        )
 
     @classmethod
     def human_readable_validation_error_explanation(cls, exc: pydantic.ValidationError):
-        try:
-            N_err = exc.error_count()
-            error_or_errors = "error" if N_err == 1 else "errors"
-            error_msg = f'Unfortunately, the data you submitted contained {N_err} {error_or_errors} :<br><ul>'
-            translation_dict = {
-                'link': 'Link',
-                'link_text': 'Festival',
-                'country': 'Country',
-                'date_end': 'End Date',
-                'date_start': 'Start Date',
-                'city': 'City',
-            }
-            for err in exc.errors():
-                if err['type'] == 'missing':
-                    field = translation_dict[err['loc'][0]]
-                    error_msg += f'<li>Missing Field: {field}</li>'
-                elif err['type'] == 'value_error':
-                    error_msg += f'<li>{err["msg"]}</li>'
-            error_msg += '</ul>'
-            return error_msg
-        except Exception:
-            return f'Error: {exc.errors()}'
+        pass
